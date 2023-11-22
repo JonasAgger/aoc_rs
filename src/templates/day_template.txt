@@ -1,5 +1,7 @@
 use anyhow::Result;
 
+use crate::utils::AoCResult;
+
 use super::super::AocDay;
 
 
@@ -14,11 +16,12 @@ impl Day {
 }
 
 impl AocDay for Day {
-    fn run_part1(&mut self) -> Result<String> {
-        todo!()
+    fn run_part1(&mut self, input: &Vec<String>) -> Result<AoCResult> {
+
+        Ok(AoCResult::None)
     }
 
-    fn run_part2(&mut self) -> Result<String> {
-        todo!()
+    fn run_part2(&mut self, input: &Vec<String>) -> Result<AoCResult> {
+        Ok(AoCResult::None)
     }
 }

@@ -1,6 +1,7 @@
 use std::{path::PathBuf, io::Write};
 
 use anyhow::Result;
+use tracing::debug;
 
 pub struct DayGenerator {
     file_path: String
@@ -15,7 +16,7 @@ impl DayGenerator {
     }
 
     pub fn generate_day(&self, day: u8, year: u16) -> Result<()> {
-        let mut year_path = PathBuf::from(&self.file_path).join(format!("year_{}", year));
+        let year_path = PathBuf::from(&self.file_path).join(format!("year_{}", year));
 
         std::fs::create_dir_all(&year_path)?;
 
@@ -28,7 +29,7 @@ impl DayGenerator {
             .write(true)
             .open(day_path)?;
 
-        let mut year_mod_file = std::fs::OpenOptions::new()
+        let year_mod_file = std::fs::OpenOptions::new()
             .create(true)
             .append(true)
             .open(mod_year_path)?;
@@ -60,15 +61,16 @@ impl DayGenerator {
         Ok(())
     }
 
-    pub fn get_next_day(&self, year: u16) -> Result<u8> {
-        let mut year_path = PathBuf::from(&self.file_path).join(format!("year_{}", year));
+    pub fn get_current_day(&self, year: u16) -> Result<u8> {
+        let mut next: u8 = 0;
+
+        let year_path = PathBuf::from(&self.file_path).join(format!("year_{}", year));
 
         let dir_entry = match std::fs::read_dir(&year_path) {
             Ok(dir) => dir,
-            Err(_) => return Ok(1),
+            Err(_) => return Ok(next),
         };
 
-        let mut next: u8 = 0;
 
         for entry in dir_entry.into_iter().filter_map(|p| p.ok()).filter(|p| !p.file_name().eq_ignore_ascii_case("mod.rs")) {
             // Should not be possible
@@ -83,7 +85,7 @@ impl DayGenerator {
             }
         }
 
-        Ok(next + 1)
+        Ok(next)
     }
 
     fn get_mod_string(&self) -> String {
@@ -109,10 +111,11 @@ impl DayGenerator {
 
         for year_entry in dir_entry.into_iter().filter(|p| p.as_ref().unwrap().file_type().unwrap().is_dir()).filter_map(|p| p.ok()) {
             let year: u16 = year_entry.file_name().to_str().unwrap().to_ascii_lowercase()[5..].parse().expect("Expected year to be parsable");
-            println!("year: {}", year);
+            debug!("year: {}", year);
+            
             for day_entry_str in std::fs::read_dir(year_entry.path()).expect("Expected a year entry here").filter_map(|p| p.ok()).filter(|p| !p.file_name().eq_ignore_ascii_case("mod.rs")) {
                 let file_name = day_entry_str.file_name();
-                dbg!(&file_name);
+                debug!("file_name: {:?}", &file_name);
                 let day: u8 = file_name.to_str().unwrap().to_ascii_lowercase()[4..6].parse().expect("expected to parse date");
                 writeln!(mod_string, "({}, {}) => Ok(Box::new(year_{}::day_{:02}::Day::new())),", day, year, year, day).expect("Expected to be able to format string")
             }

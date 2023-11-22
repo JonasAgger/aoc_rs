@@ -1,16 +1,17 @@
 mod day_generator;
-pub mod tasks;
+pub mod events;
 mod commands;
-
-use std::sync::atomic::AtomicBool;
+pub mod utils;
 
 use clap::{Parser, Subcommand, ValueEnum};
 use anyhow::Result;
+use tracing::{debug, Level};
+use tracing_subscriber::FmtSubscriber;
 
-use crate::day_generator::DayGenerator;
+use crate::{day_generator::DayGenerator, commands::InputFetcher};
 
-const days_folder: &str = "./src/tasks";
-static VERBOSE: AtomicBool = AtomicBool::new(false);
+const DAYS_FOLDER: &str = "./src/events";
+const INPUT_FOLDER: &str = "./inputs";
 
 #[derive(Parser, Debug)]
 struct AoCOptions {
@@ -27,6 +28,10 @@ struct AoCOptions {
 
     /// Verbose Logging
     #[arg(short, long)]
+    test: bool,
+
+    /// Verbose Logging
+    #[arg(short, long)]
     verbose: bool,
 }
 
@@ -39,8 +44,16 @@ enum AoCCommands {
 
 fn main() -> Result<()> {
     let mut cli = AoCOptions::parse();
+    
+    let subscriber = FmtSubscriber::builder()
+        .with_max_level(match &cli.verbose {
+            true => Level::DEBUG,
+            false => Level::INFO,
+        })
+        .finish();
+    tracing::subscriber::set_global_default(subscriber)?;
 
-    let day_generator = DayGenerator::new(String::from(days_folder));
+    let day_generator = DayGenerator::new(String::from(DAYS_FOLDER));
 
     let now = time::OffsetDateTime::now_utc();
 
@@ -50,17 +63,25 @@ fn main() -> Result<()> {
     }
 
     if cli.day == None {
-        cli.day = Some(day_generator.get_next_day(cli.year.unwrap())?)
+        cli.day = Some(day_generator.get_current_day(cli.year.unwrap())?)
     }
 
-    println!("{:?}", cli);
+    debug!("{:?}", cli);
 
-
+    let day = cli.day.unwrap();
+    let year = cli.year.unwrap();
 
     match cli.command {
-        AoCCommands::Run => commands::run::run_day(cli.day.unwrap(), cli.year.unwrap()),
-        AoCCommands::Bench => commands::bench::bench_day(cli.day.unwrap(), cli.year.unwrap()),
-        AoCCommands::Create => day_generator.generate_day(cli.day.unwrap(), cli.year.unwrap()),
+        AoCCommands::Run => {
+            let mut input_fetcher = InputFetcher::new(INPUT_FOLDER);
+            let input = input_fetcher.fetch(day, year, cli.test);
+            commands::run::run_day(day, year, input)
+        },
+        AoCCommands::Bench => {
+            let mut input_fetcher = InputFetcher::new(INPUT_FOLDER);
+            let input = input_fetcher.fetch(day, year, cli.test);
+            commands::bench::bench_day(day, year, input)
+        },
+        AoCCommands::Create => day_generator.generate_day(day + 1, year),
     }
-    
 }
