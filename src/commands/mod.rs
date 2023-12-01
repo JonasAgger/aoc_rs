@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{path::PathBuf, io::Write};
 
 
 pub mod run;
@@ -99,6 +99,7 @@ impl InputFetcher {
                 println!("Could not find personal cookie or the previously entered cookie dident work.");
                 println!(" Please enter the cookie when searching for input on {}", Self::BASE_ADDRESS);
                 print!("cookie: ");
+                std::io::stdout().lock().flush().unwrap();
                 let stdin = std::io::stdin();
                 use std::io::BufRead;
                 let cookie = stdin.lock().lines().next().unwrap().unwrap();
