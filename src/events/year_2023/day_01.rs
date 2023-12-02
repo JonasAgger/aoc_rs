@@ -34,7 +34,7 @@ impl Day {
 
 impl AocDay for Day {
     fn run_part1(&mut self, input: &Vec<String>) -> Result<AoCResult> {
-        let sum = input
+        let sum: i64 = input
         .into_iter()
         .map(|s| s.chars().filter(|c| char::is_ascii_digit(c)).collect::<Vec<_>>())
         .map(|digits| {
@@ -47,13 +47,13 @@ impl AocDay for Day {
             sum.expect(format!("Could not parse digits from vec: {:?}", digits).as_str())
         }).sum();
 
-        Ok(AoCResult::Int(sum))
+        Ok(sum.into())
     }
 
 
     // First time I've encountered a day 1 that was not trivial.
     fn run_part2(&mut self, input: &Vec<String>) -> Result<AoCResult> {
-        let sum = input
+        let sum: i64 = input
         .into_iter()
         // reduce string to "parts"
         .map(|s| self.reduce_part2(s))
@@ -85,7 +85,7 @@ impl AocDay for Day {
             }
         }).sum();
 
-        Ok(AoCResult::Int(sum))
+        Ok(sum.into())
     }
 }
 

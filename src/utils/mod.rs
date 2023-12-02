@@ -7,7 +7,10 @@ pub enum AoCResult {
     None,
     String(String),
     Int(i64),
+    UInt(u64),
+    USize(usize),
     BigInt(i128),
+    BigUInt(u128),
     Float(f64),
 }
 
@@ -17,7 +20,10 @@ impl Display for AoCResult {
             AoCResult::None => write!(f, "Empty"),
             AoCResult::String(s) => write!(f, "{}", s),
             AoCResult::Int(i) => write!(f, "{}", i),
+            AoCResult::UInt(i) => write!(f, "{}", i),
+            AoCResult::USize(i) => write!(f, "{}", i),
             AoCResult::BigInt(i) => write!(f, "{}", i),
+            AoCResult::BigUInt(i) => write!(f, "{}", i),
             AoCResult::Float(i) => write!(f, "{}", i),
         }
     }
@@ -41,9 +47,27 @@ impl Into<AoCResult> for i64 {
     }
 }
 
+impl Into<AoCResult> for u64 {
+    fn into(self) -> AoCResult {
+        AoCResult::UInt(self)
+    }
+}
+
+impl Into<AoCResult> for usize {
+    fn into(self) -> AoCResult {
+        AoCResult::USize(self)
+    }
+}
+
 impl Into<AoCResult> for i128 {
     fn into(self) -> AoCResult {
         AoCResult::BigInt(self)
+    }
+}
+
+impl Into<AoCResult> for u128 {
+    fn into(self) -> AoCResult {
+        AoCResult::BigUInt(self)
     }
 }
 
