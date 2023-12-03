@@ -35,7 +35,7 @@ impl InputFetcher {
             });
         
         match std::fs::read_to_string(&data_path) {
-            Ok(input) => input.lines().map(|s| s.into()).collect(),
+            Ok(input) => input.lines().map(|s| s.trim().into()).collect(),
             Err(_) => {
                 let input = match test {
                     true => self.fetch_input_test(day, year),

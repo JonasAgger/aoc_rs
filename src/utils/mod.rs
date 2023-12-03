@@ -1,84 +1,43 @@
-use std::fmt::Display;
+pub mod point;
+pub mod aoc_result;
 
+pub use point::Point;
+pub use aoc_result::AoCResult;
 
+pub struct Utils;
 
-#[derive(Debug, PartialEq, PartialOrd)]
-pub enum AoCResult {
-    None,
-    String(String),
-    Int(i64),
-    UInt(u64),
-    USize(usize),
-    BigInt(i128),
-    BigUInt(u128),
-    Float(f64),
-}
+impl Utils {
+    pub fn has_neighbour<P: Into<Point>, T: PartialEq>(p: P, map: &Vec<Vec<T>>, val: &T) -> bool {
+        get_neighbours(p.into(), map[0].len(), map.len())
+            .any(|(x,y)| map[y][x].eq(val))
+    }
+    
+    pub fn has_any_neighbour<P: Into<Point>, T: PartialEq>(p: P, map: &Vec<Vec<T>>, vals: &[T]) -> bool {
+        get_neighbours(p.into(), map[0].len(), map.len())
+            .any(|(x,y)| {
+                let cmp = &map[y][x];
+                vals.iter().any(|v| v.eq(cmp))
+            })
+    }
 
-impl Display for AoCResult {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            AoCResult::None => write!(f, "Empty"),
-            AoCResult::String(s) => write!(f, "{}", s),
-            AoCResult::Int(i) => write!(f, "{}", i),
-            AoCResult::UInt(i) => write!(f, "{}", i),
-            AoCResult::USize(i) => write!(f, "{}", i),
-            AoCResult::BigInt(i) => write!(f, "{}", i),
-            AoCResult::BigUInt(i) => write!(f, "{}", i),
-            AoCResult::Float(i) => write!(f, "{}", i),
-        }
+    pub fn has_cmp_neighbour<P: Into<Point>, T: PartialEq, F: Fn(&T) -> bool>(p: P, map: &Vec<Vec<T>>, cmp: F) -> bool {
+        get_neighbours(p.into(), map[0].len(), map.len())
+            .any(|(x,y)| cmp(&map[y][x]))
+    }
+
+    pub fn get_neighbours_cmp<P: Into<Point>, T: PartialEq, F: Fn(&T) -> bool>(p: P, map: &Vec<Vec<T>>, cmp: F) -> Vec<Point> {
+        get_neighbours(p.into(), map[0].len(), map.len())
+            .filter(|&(x,y)| cmp(&map[y][x]))
+            .map(|t| t.into())
+            .collect()
     }
 }
 
-impl Into<AoCResult> for String {
-    fn into(self) -> AoCResult {
-        AoCResult::String(self)
-    }
-}
-
-impl Into<AoCResult> for &str {
-    fn into(self) -> AoCResult {
-        AoCResult::String(self.into())
-    }
-}
-
-impl Into<AoCResult> for i64 {
-    fn into(self) -> AoCResult {
-        AoCResult::Int(self)
-    }
-}
-
-impl Into<AoCResult> for u64 {
-    fn into(self) -> AoCResult {
-        AoCResult::UInt(self)
-    }
-}
-
-impl Into<AoCResult> for usize {
-    fn into(self) -> AoCResult {
-        AoCResult::USize(self)
-    }
-}
-
-impl Into<AoCResult> for i128 {
-    fn into(self) -> AoCResult {
-        AoCResult::BigInt(self)
-    }
-}
-
-impl Into<AoCResult> for u128 {
-    fn into(self) -> AoCResult {
-        AoCResult::BigUInt(self)
-    }
-}
-
-impl Into<AoCResult> for f64 {
-    fn into(self) -> AoCResult {
-        AoCResult::Float(self)
-    }
-}
-
-impl Into<AoCResult> for () {
-    fn into(self) -> AoCResult {
-        AoCResult::None
-    }
+fn get_neighbours(p: Point, x_bounds: usize, y_bounds: usize) -> impl Iterator<Item = (usize, usize)> {
+    let x_range = if p.x() > 0 { p.x() - 1..p.x() + 2 } else { 0..2 };
+    let y_range = if p.y() > 0 { p.y() - 1..p.y() + 2 } else { 0..2 };
+    x_range
+        .flat_map(move |x| y_range.clone().map(move |y| Point::new(x, y)))
+        .filter(move |&pp| p != pp && pp.x() < x_bounds && pp.y() < y_bounds)
+        .map(|p| p.into())
 }

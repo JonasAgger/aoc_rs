@@ -1,6 +1,6 @@
 use anyhow::Result;
 
-use crate::utils::AoCResult;
+use crate::utils::*;
 
 use super::super::AocDay;
 
