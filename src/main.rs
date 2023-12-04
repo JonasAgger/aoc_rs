@@ -39,7 +39,8 @@ struct AoCOptions {
 enum AoCCommands {
     Run,
     Bench,
-    Create
+    Create,
+    BenchAll
 }
 
 fn main() -> Result<()> {
@@ -81,6 +82,14 @@ fn main() -> Result<()> {
             let mut input_fetcher = InputFetcher::new(INPUT_FOLDER);
             let input = input_fetcher.fetch(day, year, cli.test);
             commands::bench::bench_day(day, year, input)
+        },
+        AoCCommands::BenchAll => {
+            for day in 1..=day {
+                let mut input_fetcher = InputFetcher::new(INPUT_FOLDER);
+                let input = input_fetcher.fetch(day, year, cli.test);
+                commands::bench::bench_day(day, year, input)?;
+            }
+            Ok(())
         },
         AoCCommands::Create => day_generator.generate_day(day + 1, year),
     }
