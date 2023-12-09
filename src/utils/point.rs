@@ -1,4 +1,3 @@
-
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 pub struct Point {
     x: usize,

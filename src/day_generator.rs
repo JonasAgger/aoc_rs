@@ -1,18 +1,15 @@
-use std::{path::PathBuf, io::Write};
+use std::{io::Write, path::PathBuf};
 
 use anyhow::Result;
 use tracing::debug;
 
 pub struct DayGenerator {
-    file_path: String
+    file_path: String,
 }
 
 impl DayGenerator {
-
     pub fn new(file_path: String) -> Self {
-        Self {
-            file_path
-        }
+        Self { file_path }
     }
 
     pub fn generate_day(&self, day: u8, year: u16) -> Result<()> {
@@ -39,7 +36,6 @@ impl DayGenerator {
             .write(true)
             .truncate(true)
             .open(PathBuf::from(&self.file_path).join("mod.rs"))?;
-
 
         writeln!(&year_mod_file, "pub mod day_{:02};", day)?;
 
@@ -71,14 +67,18 @@ impl DayGenerator {
             Err(_) => return Ok(next),
         };
 
-
-        for entry in dir_entry.into_iter().filter_map(|p| p.ok()).filter(|p| !p.file_name().eq_ignore_ascii_case("mod.rs")) {
+        for entry in dir_entry
+            .into_iter()
+            .filter_map(|p| p.ok())
+            .filter(|p| !p.file_name().eq_ignore_ascii_case("mod.rs"))
+        {
             // Should not be possible
             if entry.file_type().unwrap().is_dir() {
                 continue;
             }
 
-            let date: u8 = entry.file_name().to_str().unwrap().to_ascii_lowercase()[4..6].parse()?;
+            let date: u8 =
+                entry.file_name().to_str().unwrap().to_ascii_lowercase()[4..6].parse()?;
 
             if date > next {
                 next = date;
@@ -94,7 +94,11 @@ impl DayGenerator {
 
         let mut mod_string = String::new();
 
-        for entry in dir_entry.into_iter().filter(|p| p.as_ref().unwrap().file_type().unwrap().is_dir()).map(|p| p.unwrap()) {
+        for entry in dir_entry
+            .into_iter()
+            .filter(|p| p.as_ref().unwrap().file_type().unwrap().is_dir())
+            .map(|p| p.unwrap())
+        {
             let file_name = entry.file_name();
             let name = file_name.to_str().unwrap();
             writeln!(mod_string, "mod {};", name).expect("Expected to be able to format string")
@@ -109,15 +113,36 @@ impl DayGenerator {
 
         let mut mod_string = String::new();
 
-        for year_entry in dir_entry.into_iter().filter(|p| p.as_ref().unwrap().file_type().unwrap().is_dir()).filter_map(|p| p.ok()) {
-            let year: u16 = year_entry.file_name().to_str().unwrap().to_ascii_lowercase()[5..].parse().expect("Expected year to be parsable");
+        for year_entry in dir_entry
+            .into_iter()
+            .filter(|p| p.as_ref().unwrap().file_type().unwrap().is_dir())
+            .filter_map(|p| p.ok())
+        {
+            let year: u16 = year_entry
+                .file_name()
+                .to_str()
+                .unwrap()
+                .to_ascii_lowercase()[5..]
+                .parse()
+                .expect("Expected year to be parsable");
             debug!("year: {}", year);
-            
-            for day_entry_str in std::fs::read_dir(year_entry.path()).expect("Expected a year entry here").filter_map(|p| p.ok()).filter(|p| !p.file_name().eq_ignore_ascii_case("mod.rs")) {
+
+            for day_entry_str in std::fs::read_dir(year_entry.path())
+                .expect("Expected a year entry here")
+                .filter_map(|p| p.ok())
+                .filter(|p| !p.file_name().eq_ignore_ascii_case("mod.rs"))
+            {
                 let file_name = day_entry_str.file_name();
                 debug!("file_name: {:?}", &file_name);
-                let day: u8 = file_name.to_str().unwrap().to_ascii_lowercase()[4..6].parse().expect("expected to parse date");
-                writeln!(mod_string, "({}, {}) => Ok(Box::new(year_{}::day_{:02}::Day::new())),", day, year, year, day).expect("Expected to be able to format string")
+                let day: u8 = file_name.to_str().unwrap().to_ascii_lowercase()[4..6]
+                    .parse()
+                    .expect("expected to parse date");
+                writeln!(
+                    mod_string,
+                    "({}, {}) => Ok(Box::new(year_{}::day_{:02}::Day::new())),",
+                    day, year, year, day
+                )
+                .expect("Expected to be able to format string")
             }
         }
 

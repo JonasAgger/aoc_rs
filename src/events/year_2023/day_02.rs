@@ -4,11 +4,10 @@ use crate::utils::AoCResult;
 
 use super::super::AocDay;
 
-
 pub struct Day {
     red_max: usize,
     green_max: usize,
-    blue_max: usize
+    blue_max: usize,
 }
 
 impl Day {
@@ -16,19 +15,19 @@ impl Day {
         Self {
             red_max: 12,
             green_max: 13,
-            blue_max: 14
+            blue_max: 14,
         }
     }
 
     fn part1_is_color_ok(&self, color_counts: Vec<&str>) -> Result<bool> {
         for i in (0..color_counts.len()).step_by(2) {
             let count: usize = color_counts[i].parse()?;
-            let color = color_counts[i+1].trim_end_matches(|c| c == ';' || c == ',');
+            let color = color_counts[i + 1].trim_end_matches(|c| c == ';' || c == ',');
             match color {
                 "red" if self.red_max < count => return Ok(false),
                 "blue" if self.blue_max < count => return Ok(false),
                 "green" if self.green_max < count => return Ok(false),
-                _ => continue
+                _ => continue,
             }
         }
         Ok(true)
@@ -40,12 +39,12 @@ impl Day {
         let mut max_green = 0;
         for i in (0..color_counts.len()).step_by(2) {
             let count: usize = color_counts[i].parse()?;
-            let color = color_counts[i+1].trim_end_matches(|c| c == ';' || c == ',');
+            let color = color_counts[i + 1].trim_end_matches(|c| c == ';' || c == ',');
             match color {
                 "red" if max_red < count => max_red = count,
                 "blue" if max_blue < count => max_blue = count,
                 "green" if max_green < count => max_green = count,
-                _ => continue
+                _ => continue,
             }
         }
         Ok(max_red * max_blue * max_green)
@@ -58,13 +57,15 @@ impl AocDay for Day {
 
         for game in input {
             let mut parts = game.split(':');
-            let id: i64 = parts.next().unwrap()[5..].parse()?; // Skip 'Game ' 
+            let id: i64 = parts.next().unwrap()[5..].parse()?; // Skip 'Game '
 
-            let color_counts: Vec<_> = parts.last().unwrap()
+            let color_counts: Vec<_> = parts
+                .last()
+                .unwrap()
                 .split(' ')
                 .filter(|s| s.len() > 0)
                 .collect();
-            
+
             if self.part1_is_color_ok(color_counts)? {
                 valid_games.push(id);
             }
@@ -77,11 +78,13 @@ impl AocDay for Day {
         let mut cube_powers = vec![];
         for game in input {
             let parts = game.split(':');
-            let color_counts: Vec<_> = parts.last().unwrap()
+            let color_counts: Vec<_> = parts
+                .last()
+                .unwrap()
                 .split(' ')
                 .filter(|s| s.len() > 0)
                 .collect();
-            
+
             cube_powers.push(self.part2_power_of_cubes(color_counts)?);
         }
 

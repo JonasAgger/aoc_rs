@@ -1,14 +1,16 @@
+#![feature(slice_group_by)]
+
+mod commands;
 mod day_generator;
 pub mod events;
-mod commands;
 pub mod utils;
 
-use clap::{Parser, Subcommand, ValueEnum};
 use anyhow::Result;
+use clap::{Parser, Subcommand, ValueEnum};
 use tracing::{debug, Level};
 use tracing_subscriber::FmtSubscriber;
 
-use crate::{day_generator::DayGenerator, commands::InputFetcher};
+use crate::{commands::InputFetcher, day_generator::DayGenerator};
 
 const DAYS_FOLDER: &str = "./src/events";
 const INPUT_FOLDER: &str = "./inputs";
@@ -31,6 +33,10 @@ struct AoCOptions {
     test: bool,
 
     /// Verbose Logging
+    #[arg(short, long, value_parser = clap::value_parser!(u8).range(1..=2))]
+    part: Option<u8>,
+
+    /// Verbose Logging
     #[arg(short, long)]
     verbose: bool,
 }
@@ -40,12 +46,12 @@ enum AoCCommands {
     Run,
     Bench,
     Create,
-    BenchAll
+    BenchAll,
 }
 
 fn main() -> Result<()> {
     let mut cli = AoCOptions::parse();
-    
+
     let subscriber = FmtSubscriber::builder()
         .with_max_level(match &cli.verbose {
             true => Level::DEBUG,
@@ -76,21 +82,21 @@ fn main() -> Result<()> {
         AoCCommands::Run => {
             let mut input_fetcher = InputFetcher::new(INPUT_FOLDER);
             let input = input_fetcher.fetch(day, year, cli.test);
-            commands::run::run_day(day, year, input)
-        },
+            commands::run::run_day(day, year, input, cli.part)
+        }
         AoCCommands::Bench => {
             let mut input_fetcher = InputFetcher::new(INPUT_FOLDER);
             let input = input_fetcher.fetch(day, year, cli.test);
-            commands::bench::bench_day(day, year, input)
-        },
+            commands::bench::bench_day(day, year, input, cli.part)
+        }
         AoCCommands::BenchAll => {
             for day in 1..=day {
                 let mut input_fetcher = InputFetcher::new(INPUT_FOLDER);
                 let input = input_fetcher.fetch(day, year, cli.test);
-                commands::bench::bench_day(day, year, input)?;
+                commands::bench::bench_day(day, year, input, cli.part)?;
             }
             Ok(())
-        },
+        }
         AoCCommands::Create => day_generator.generate_day(day + 1, year),
     }
 }
