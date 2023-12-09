@@ -23,9 +23,9 @@ impl Day {
     // had to add another regex lib to support backtracking
     // In hindsight, we probably should have just brute-force matched
     // This is not an efficient approach, but the most "readable" imo
-    fn reduce_part2(&self, line: &String) -> Vec<String> {
+    fn reduce_part2(&self, line: &str) -> Vec<String> {
         self.regex
-            .captures_iter(&line)
+            .captures_iter(line)
             .map(|capture| {
                 let regex_match = capture.unwrap().get(1).unwrap();
                 regex_match.as_str().to_string()
@@ -35,12 +35,12 @@ impl Day {
 }
 
 impl AocDay for Day {
-    fn run_part1(&mut self, input: &Vec<String>) -> Result<AoCResult> {
+    fn run_part1(&mut self, input: &[String]) -> Result<AoCResult> {
         let sum: i64 = input
-            .into_iter()
+            .iter()
             .map(|s| {
                 s.chars()
-                    .filter(|c| char::is_ascii_digit(c))
+                    .filter(char::is_ascii_digit)
                     .collect::<Vec<_>>()
             })
             .map(|digits| {
@@ -58,9 +58,9 @@ impl AocDay for Day {
     }
 
     // First time I've encountered a day 1 that was not trivial.
-    fn run_part2(&mut self, input: &Vec<String>) -> Result<AoCResult> {
+    fn run_part2(&mut self, input: &[String]) -> Result<AoCResult> {
         let sum: i64 = input
-            .into_iter()
+            .iter()
             // reduce string to "parts"
             .map(|s| self.reduce_part2(s))
             // map parts to digits

@@ -65,11 +65,11 @@ fn main() -> Result<()> {
     let now = time::OffsetDateTime::now_utc();
 
     // Replace year and date
-    if cli.year == None {
+    if cli.year.is_none() {
         cli.year = Some(now.year() as u16);
     }
 
-    if cli.day == None {
+    if cli.day.is_none() {
         cli.day = Some(day_generator.get_current_day(cli.year.unwrap())?)
     }
 

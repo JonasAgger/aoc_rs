@@ -74,7 +74,7 @@ impl Day {
     fn parse_hand(&self, hand: &str) -> Hand<Card> {
         let cards = self.parse_cards(hand);
 
-        let mut sorted_cards: Vec<_> = cards.iter().copied().collect();
+        let mut sorted_cards: Vec<_> = cards.to_vec();
         sorted_cards.sort();
         let mut group_lens: Vec<_> = sorted_cards
             .group_by(|a, b| a == b)
@@ -136,11 +136,11 @@ impl Day {
 // A, K, Q, J, T
 // 32T3K 765
 impl AocDay for Day {
-    fn run_part1(&mut self, input: &Vec<String>) -> Result<AoCResult> {
+    fn run_part1(&mut self, input: &[String]) -> Result<AoCResult> {
         let mut plays: Vec<_> = input
-            .into_iter()
+            .iter()
             .map(|s| {
-                let (p1, p2) = s.split_once(" ").unwrap();
+                let (p1, p2) = s.split_once(' ').unwrap();
 
                 Play(self.parse_hand(p1), p2.parse().unwrap())
             })
@@ -157,11 +157,11 @@ impl AocDay for Day {
         Ok(total_winnings.into())
     }
 
-    fn run_part2(&mut self, input: &Vec<String>) -> Result<AoCResult> {
+    fn run_part2(&mut self, input: &[String]) -> Result<AoCResult> {
         let mut plays: Vec<_> = input
-            .into_iter()
+            .iter()
             .map(|s| {
-                let (p1, p2) = s.split_once(" ").unwrap();
+                let (p1, p2) = s.split_once(' ').unwrap();
 
                 Play(self.parse_hand2(p1), p2.parse().unwrap())
             })

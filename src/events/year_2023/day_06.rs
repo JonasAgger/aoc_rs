@@ -28,7 +28,7 @@ impl Day {
 }
 
 impl AocDay for Day {
-    fn run_part1(&mut self, input: &Vec<String>) -> Result<AoCResult> {
+    fn run_part1(&mut self, input: &[String]) -> Result<AoCResult> {
         let times: Vec<f64> = input[0][5..]
             .split_ascii_whitespace()
             .filter_map(|t| t.trim().parse().ok())
@@ -43,14 +43,14 @@ impl AocDay for Day {
             .zip(distances.iter())
             .map(|(&time, &dist)| self.solve_for_zeros(time, dist))
             .map(|(min, max)| (max - min) + 1) // have to push to be inclusive here
-            .fold(1, |acc, dist| acc * dbg!(dist));
+            .fold(1, |acc, dist| acc * dist);
 
         Ok(accum.into())
     }
 
-    fn run_part2(&mut self, input: &Vec<String>) -> Result<AoCResult> {
-        let time: f64 = input[0][5..].trim().replace(" ", "").parse()?;
-        let distance: f64 = input[1][9..].trim().replace(" ", "").parse()?;
+    fn run_part2(&mut self, input: &[String]) -> Result<AoCResult> {
+        let time: f64 = input[0][5..].trim().replace(' ', "").parse()?;
+        let distance: f64 = input[1][9..].trim().replace(' ', "").parse()?;
 
         let (min, max) = self.solve_for_zeros(time, distance);
         let possibilities = (max - min) + 1; // have to push to be inclusive here

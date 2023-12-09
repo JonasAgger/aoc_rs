@@ -36,9 +36,9 @@ impl InputFetcher {
                     true => self.fetch_input_test(day, year),
                     false => self.fetch_input(day, year),
                 };
-                std::fs::create_dir_all(&data_path.parent().unwrap())
+                std::fs::create_dir_all(data_path.parent().unwrap())
                     .expect("expected to create all dirs");
-                std::fs::write(&data_path, &input.join("\n"))
+                std::fs::write(&data_path, input.join("\n"))
                     .expect("Expected to be able to write inputs");
 
                 input
@@ -111,7 +111,7 @@ impl InputFetcher {
                 let cookie = stdin.lock().lines().next().unwrap().unwrap();
                 self.cookie = cookie;
 
-                std::fs::create_dir_all(&cookie_path.parent().unwrap())
+                std::fs::create_dir_all(cookie_path.parent().unwrap())
                     .expect("expected to create cookie");
                 std::fs::write(&cookie_path, &self.cookie)
                     .expect("Expected to be able to write cookie");

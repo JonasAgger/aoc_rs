@@ -13,7 +13,7 @@ impl Day {
 }
 
 impl AocDay for Day {
-    fn run_part1(&mut self, input: &Vec<String>) -> Result<AoCResult> {
+    fn run_part1(&mut self, input: &[String]) -> Result<AoCResult> {
         let mut seeds: Vec<usize> = input[0]
             .split_once(':')
             .unwrap()
@@ -43,7 +43,7 @@ impl AocDay for Day {
         Ok(seeds.iter().min().unwrap().to_owned().into())
     }
 
-    fn run_part2(&mut self, input: &Vec<String>) -> Result<AoCResult> {
+    fn run_part2(&mut self, input: &[String]) -> Result<AoCResult> {
         let seeds: Vec<usize> = input[0]
             .split_once(':')
             .unwrap()
@@ -125,15 +125,13 @@ impl Map {
         match self
             .source_ranges
             .iter()
-            .enumerate()
-            .filter(|&(_, r)| r.contains(&nr))
-            .next()
+            .enumerate().find(|&(_, r)| r.contains(&nr))
         {
             Some((index, range)) => {
                 let from_start = nr - range.start;
-                let dest = self.dest_ranges[index].start + from_start;
+                
 
-                dest
+                self.dest_ranges[index].start + from_start
             }
             None => nr,
         }

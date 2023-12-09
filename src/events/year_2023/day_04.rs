@@ -29,13 +29,13 @@ impl Day {
 
         your_numbers
             .iter()
-            .filter(|nr| winning.contains(&nr))
+            .filter(|nr| winning.contains(nr))
             .count()
     }
 }
 
 impl AocDay for Day {
-    fn run_part1(&mut self, input: &Vec<String>) -> Result<AoCResult> {
+    fn run_part1(&mut self, input: &[String]) -> Result<AoCResult> {
         let mut points = 0;
 
         for line in input {
@@ -48,7 +48,7 @@ impl AocDay for Day {
         Ok(points.into())
     }
 
-    fn run_part2(&mut self, input: &Vec<String>) -> Result<AoCResult> {
+    fn run_part2(&mut self, input: &[String]) -> Result<AoCResult> {
         let card_win_index_map: Vec<_> = input
             .iter()
             .map(|line| self.count_winning_occurences(line))
@@ -62,7 +62,7 @@ impl AocDay for Day {
 
             // Start at i + 1 and move to i + 1 + wins
             for j in (i + 1)..(i + wins_on_card + 1) {
-                card_counts[j] = card_counts[j] + card_count;
+                card_counts[j] += card_count;
             }
         }
 

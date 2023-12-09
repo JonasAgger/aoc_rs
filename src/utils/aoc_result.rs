@@ -27,56 +27,56 @@ impl Display for AoCResult {
     }
 }
 
-impl Into<AoCResult> for String {
-    fn into(self) -> AoCResult {
-        AoCResult::String(self)
+impl From<String> for AoCResult {
+    fn from(val: String) -> Self {
+        AoCResult::String(val)
     }
 }
 
-impl Into<AoCResult> for &str {
-    fn into(self) -> AoCResult {
-        AoCResult::String(self.into())
+impl From<&str> for AoCResult {
+    fn from(val: &str) -> Self {
+        AoCResult::String(val.into())
     }
 }
 
-impl Into<AoCResult> for i64 {
-    fn into(self) -> AoCResult {
-        AoCResult::Int(self)
+impl From<i64> for AoCResult {
+    fn from(val: i64) -> Self {
+        AoCResult::Int(val)
     }
 }
 
-impl Into<AoCResult> for u64 {
-    fn into(self) -> AoCResult {
-        AoCResult::UInt(self)
+impl From<u64> for AoCResult {
+    fn from(val: u64) -> Self {
+        AoCResult::UInt(val)
     }
 }
 
-impl Into<AoCResult> for usize {
-    fn into(self) -> AoCResult {
-        AoCResult::USize(self)
+impl From<usize> for AoCResult {
+    fn from(val: usize) -> Self {
+        AoCResult::USize(val)
     }
 }
 
-impl Into<AoCResult> for i128 {
-    fn into(self) -> AoCResult {
-        AoCResult::BigInt(self)
+impl From<i128> for AoCResult {
+    fn from(val: i128) -> Self {
+        AoCResult::BigInt(val)
     }
 }
 
-impl Into<AoCResult> for u128 {
-    fn into(self) -> AoCResult {
-        AoCResult::BigUInt(self)
+impl From<u128> for AoCResult {
+    fn from(val: u128) -> Self {
+        AoCResult::BigUInt(val)
     }
 }
 
-impl Into<AoCResult> for f64 {
-    fn into(self) -> AoCResult {
-        AoCResult::Float(self)
+impl From<f64> for AoCResult {
+    fn from(val: f64) -> Self {
+        AoCResult::Float(val)
     }
 }
 
-impl Into<AoCResult> for () {
-    fn into(self) -> AoCResult {
+impl From<()> for AoCResult {
+    fn from(_val: ()) -> Self {
         AoCResult::None
     }
 }

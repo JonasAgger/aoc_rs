@@ -13,10 +13,10 @@ impl Day {
 }
 
 impl AocDay for Day {
-    fn run_part1(&mut self, input: &Vec<String>) -> Result<AoCResult> {
+    fn run_part1(&mut self, input: &[String]) -> Result<AoCResult> {
         let mut valid_parts: Vec<usize> = vec![];
 
-        let lines: Vec<Vec<_>> = input.into_iter().map(|s| s.chars().collect()).collect();
+        let lines: Vec<Vec<_>> = input.iter().map(|s| s.chars().collect()).collect();
         let mut parse_buffer = String::new();
         let mut start_parse_index = 0;
         let mut is_parsing = false;
@@ -63,10 +63,10 @@ impl AocDay for Day {
         Ok(valid_parts.iter().sum::<usize>().into())
     }
 
-    fn run_part2(&mut self, input: &Vec<String>) -> Result<AoCResult> {
+    fn run_part2(&mut self, input: &[String]) -> Result<AoCResult> {
         let mut gear_ratios = vec![];
 
-        let lines: Vec<Vec<_>> = input.into_iter().map(|s| s.chars().collect()).collect();
+        let lines: Vec<Vec<_>> = input.iter().map(|s| s.chars().collect()).collect();
         let parts = parse_parts(&lines);
 
         for (y_index, chars) in lines.iter().enumerate() {
@@ -154,12 +154,12 @@ fn parse_parts(lines: &Vec<Vec<char>>) -> Vec<Part> {
                 part.y = y_index;
                 part.x = x_index;
                 part.chars.push(*char);
-            } else if part.chars.len() > 0 {
+            } else if !part.chars.is_empty() {
                 parts.push(part);
                 part = Part::new();
             }
         }
-        if part.chars.len() > 0 {
+        if !part.chars.is_empty() {
             parts.push(part);
             part = Part::new();
         }

@@ -52,7 +52,7 @@ impl Day {
 }
 
 impl AocDay for Day {
-    fn run_part1(&mut self, input: &Vec<String>) -> Result<AoCResult> {
+    fn run_part1(&mut self, input: &[String]) -> Result<AoCResult> {
         let mut valid_games = vec![];
 
         for game in input {
@@ -63,7 +63,7 @@ impl AocDay for Day {
                 .last()
                 .unwrap()
                 .split(' ')
-                .filter(|s| s.len() > 0)
+                .filter(|s| !s.is_empty())
                 .collect();
 
             if self.part1_is_color_ok(color_counts)? {
@@ -74,7 +74,7 @@ impl AocDay for Day {
         Ok(valid_games.into_iter().sum::<i64>().into())
     }
 
-    fn run_part2(&mut self, input: &Vec<String>) -> Result<AoCResult> {
+    fn run_part2(&mut self, input: &[String]) -> Result<AoCResult> {
         let mut cube_powers = vec![];
         for game in input {
             let parts = game.split(':');
@@ -82,7 +82,7 @@ impl AocDay for Day {
                 .last()
                 .unwrap()
                 .split(' ')
-                .filter(|s| s.len() > 0)
+                .filter(|s| !s.is_empty())
                 .collect();
 
             cube_powers.push(self.part2_power_of_cubes(color_counts)?);

@@ -13,7 +13,7 @@ impl Day {
 }
 
 impl AocDay for Day {
-    fn run_part1(&mut self, input: &Vec<String>) -> Result<AoCResult> {
+    fn run_part1(&mut self, input: &[String]) -> Result<AoCResult> {
         let sum: i64 = input
             .iter()
             .map(|line| {
@@ -21,13 +21,13 @@ impl AocDay for Day {
                     .filter_map(|nr| nr.parse().ok())
                     .collect::<Vec<i64>>()
             })
-            .map(|oasis| generate_next(oasis))
+            .map(generate_next)
             .sum();
 
         Ok(sum.into())
     }
 
-    fn run_part2(&mut self, input: &Vec<String>) -> Result<AoCResult> {
+    fn run_part2(&mut self, input: &[String]) -> Result<AoCResult> {
         let sum: i64 = input
             .iter()
             .map(|line| {
@@ -35,7 +35,7 @@ impl AocDay for Day {
                     .filter_map(|nr| nr.parse().ok())
                     .collect::<Vec<i64>>()
             })
-            .map(|oasis| generate_prev(oasis))
+            .map(generate_prev)
             .sum();
 
         Ok(sum.into())
@@ -56,7 +56,7 @@ fn generate_next(sequence: Vec<i64>) -> i64 {
 
     let mut step = 0;
     for seq in sequences.iter().rev() {
-        step = seq.last().unwrap() + step;
+        step += seq.last().unwrap();
     }
 
     step
@@ -82,7 +82,7 @@ fn generate_prev(sequence: Vec<i64>) -> i64 {
     step
 }
 
-fn is_all_same(sequence: &Vec<i64>) -> bool {
+fn is_all_same(sequence: &[i64]) -> bool {
     let element = sequence[0];
     sequence.iter().all(|i| i.eq(&element))
 }

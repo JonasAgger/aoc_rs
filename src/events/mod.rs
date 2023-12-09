@@ -5,8 +5,8 @@ use anyhow::Result;
 use crate::utils::AoCResult;
 
 pub trait AocDay {
-    fn run_part1(&mut self, input: &Vec<String>) -> Result<AoCResult>;
-    fn run_part2(&mut self, input: &Vec<String>) -> Result<AoCResult>;
+    fn run_part1(&mut self, input: &[String]) -> Result<AoCResult>;
+    fn run_part2(&mut self, input: &[String]) -> Result<AoCResult>;
 }
 
 pub fn get_day(day: u8, year: u16) -> Result<Box<dyn AocDay>> {

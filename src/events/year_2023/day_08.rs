@@ -22,7 +22,7 @@ struct Node {
 }
 
 impl AocDay for Day {
-    fn run_part1(&mut self, input: &Vec<String>) -> Result<AoCResult> {
+    fn run_part1(&mut self, input: &[String]) -> Result<AoCResult> {
         let (pattern, graph) = parse(input);
 
         let start = graph.get(&String::from("AAA")).unwrap();
@@ -46,7 +46,7 @@ impl AocDay for Day {
         Ok(count.into())
     }
 
-    fn run_part2(&mut self, input: &Vec<String>) -> Result<AoCResult> {
+    fn run_part2(&mut self, input: &[String]) -> Result<AoCResult> {
         let (pattern, graph) = parse(input);
 
         let ghost_nodes: Vec<_> = graph
@@ -65,7 +65,7 @@ impl AocDay for Day {
                 let mut count = 0;
                 let mut current = node;
 
-                while !current.name.ends_with("Z") {
+                while !current.name.ends_with('Z') {
                     let move_index = count % pattern.len();
                     current = match pattern[move_index] {
                         'R' => graph.get(&current.right).unwrap(),
@@ -86,7 +86,7 @@ impl AocDay for Day {
     }
 }
 
-fn parse(input: &Vec<String>) -> (Vec<char>, HashMap<String, Node>) {
+fn parse(input: &[String]) -> (Vec<char>, HashMap<String, Node>) {
     let pattern: Vec<_> = input[0].chars().collect();
 
     let mut graph = HashMap::new();
