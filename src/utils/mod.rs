@@ -1,7 +1,7 @@
 pub mod aoc_result;
+pub mod grid;
 pub mod math_utils;
 pub mod point;
-pub mod grid;
 
 use std::fmt::Display;
 
@@ -47,15 +47,17 @@ impl Utils {
             .collect()
     }
 
-    pub fn get_neighbours_grid_cmp<P: Into<Point>, T: PartialEq + Clone + Display, F: Fn(&T) -> bool>(
+    pub fn get_neighbours_grid_cmp<
+        P: Into<Point>,
+        T: PartialEq + Clone + Display,
+        F: Fn(&T) -> bool,
+    >(
         p: P,
         map: &Grid2D<T>,
         cmp: F,
     ) -> Vec<Point> {
         get_neighbours(p.into(), map.width(), map.height())
-            .filter(|&(x, y)| {
-                cmp(map.get((x, y)).unwrap())
-            })
+            .filter(|&(x, y)| cmp(map.get((x, y)).unwrap()))
             .map(|t| t.into())
             .collect()
     }

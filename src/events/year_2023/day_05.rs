@@ -125,11 +125,11 @@ impl Map {
         match self
             .source_ranges
             .iter()
-            .enumerate().find(|&(_, r)| r.contains(&nr))
+            .enumerate()
+            .find(|&(_, r)| r.contains(&nr))
         {
             Some((index, range)) => {
                 let from_start = nr - range.start;
-                
 
                 self.dest_ranges[index].start + from_start
             }

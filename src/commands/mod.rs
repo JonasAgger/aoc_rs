@@ -23,14 +23,23 @@ impl InputFetcher {
         fetcher
     }
 
-    pub fn fetch(&mut self, day: u8, year: u16, test: bool, specific_input: &Option<String>) -> Vec<String> {
+    pub fn fetch(
+        &mut self,
+        day: u8,
+        year: u16,
+        test: bool,
+        specific_input: &Option<String>,
+    ) -> Vec<String> {
         let data_path = PathBuf::from(&self.data_save_path).join(match (test, specific_input) {
             (_, Some(input)) => format!("{}/{:02}_{}.txt", year, day, input),
             (true, None) => format!("{}/{:02}_test.txt", year, day),
             (false, None) => format!("{}/{:02}.txt", year, day),
         });
 
-        match (std::fs::read_to_string(&data_path), specific_input.is_some()) {
+        match (
+            std::fs::read_to_string(&data_path),
+            specific_input.is_some(),
+        ) {
             (Ok(input), _) => input.lines().map(|s| s.trim().into()).collect(),
             (Err(_), false) => {
                 let input = match test {
@@ -44,7 +53,12 @@ impl InputFetcher {
 
                 input
             }
-            (Err(_), true) => panic!("Failed to find specific file: {}/{:02}_{}.txt", year, day, specific_input.clone().unwrap())
+            (Err(_), true) => panic!(
+                "Failed to find specific file: {}/{:02}_{}.txt",
+                year,
+                day,
+                specific_input.clone().unwrap()
+            ),
         }
     }
 

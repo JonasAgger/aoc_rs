@@ -2,7 +2,6 @@ use std::fmt::Display;
 
 use super::Point;
 
-
 pub struct Grid2D<T: Clone + Display> {
     backing_vec: Vec<T>,
     row_width: usize,
@@ -21,7 +20,7 @@ impl<T: Clone + Display> Grid2D<T> {
 
         Self {
             backing_vec,
-            row_width
+            row_width,
         }
     }
 
@@ -30,7 +29,7 @@ impl<T: Clone + Display> Grid2D<T> {
 
         Self {
             backing_vec,
-            row_width
+            row_width,
         }
     }
 
@@ -43,8 +42,8 @@ impl<T: Clone + Display> Grid2D<T> {
     }
 
     pub fn get<P: Into<Point>>(&self, p: P) -> Option<&T> {
-        let Point {x, y} = p.into();
-        match self.is_within_bounds((x,y)) {
+        let Point { x, y } = p.into();
+        match self.is_within_bounds((x, y)) {
             true => {
                 let index = y * self.row_width + x;
                 Some(&self.backing_vec[index])
@@ -54,8 +53,8 @@ impl<T: Clone + Display> Grid2D<T> {
     }
 
     pub fn get_mut<P: Into<Point>>(&mut self, p: P) -> Option<&mut T> {
-        let Point {x, y} = p.into();
-        match self.is_within_bounds((x,y)) {
+        let Point { x, y } = p.into();
+        match self.is_within_bounds((x, y)) {
             true => {
                 let index = y * self.row_width + x;
                 Some(&mut self.backing_vec[index])
@@ -69,15 +68,15 @@ impl<T: Clone + Display> Grid2D<T> {
             if f(item) {
                 let y = index / self.row_width;
                 let x = index % self.row_width;
-                return Some(Point::new(x, y))
+                return Some(Point::new(x, y));
             }
         }
 
         None
     }
-    
+
     pub fn is_within_bounds<P: Into<Point>>(&self, p: P) -> bool {
-        let Point {x, y} = p.into();
+        let Point { x, y } = p.into();
         x <= self.width() && y <= self.height()
     }
 }
@@ -85,7 +84,7 @@ impl<T: Clone + Display> Grid2D<T> {
 impl<T: Clone + Display> Display for Grid2D<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         for i in (0..self.backing_vec.len()).step_by(self.row_width) {
-            for j in i..i+self.row_width {
+            for j in i..i + self.row_width {
                 write!(f, "{}", self.backing_vec[j])?;
             }
             writeln!(f)?;

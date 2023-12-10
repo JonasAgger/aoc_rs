@@ -35,7 +35,7 @@ struct AoCOptions {
     /// Verbose Logging
     #[arg(short, long, value_parser = clap::value_parser!(u8).range(1..=2))]
     part: Option<u8>,
-    
+
     /// Run with a specific input. Formatted day_<input>.txt
     #[arg(short, long)]
     input: Option<String>,

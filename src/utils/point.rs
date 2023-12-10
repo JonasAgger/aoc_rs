@@ -1,5 +1,4 @@
-use std::fmt::{Display, Debug};
-
+use std::fmt::{Debug, Display};
 
 #[derive(Clone, Copy, PartialEq, PartialOrd)]
 pub struct Point {

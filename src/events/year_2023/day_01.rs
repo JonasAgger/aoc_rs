@@ -38,11 +38,7 @@ impl AocDay for Day {
     fn run_part1(&mut self, input: &[String]) -> Result<AoCResult> {
         let sum: i64 = input
             .iter()
-            .map(|s| {
-                s.chars()
-                    .filter(char::is_ascii_digit)
-                    .collect::<Vec<_>>()
-            })
+            .map(|s| s.chars().filter(char::is_ascii_digit).collect::<Vec<_>>())
             .map(|digits| {
                 let sum = match digits[..] {
                     [first, .., last] => format!("{first}{last}").parse::<i64>(), // always can parse

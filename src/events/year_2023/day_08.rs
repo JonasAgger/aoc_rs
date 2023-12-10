@@ -79,7 +79,7 @@ impl AocDay for Day {
                 count
             })
             .collect();
-        
+
         let lcm = math_utils::lcm_multiple(cycles.as_slice());
 
         Ok(lcm.into())

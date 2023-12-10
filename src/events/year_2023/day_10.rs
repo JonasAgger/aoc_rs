@@ -1,9 +1,9 @@
-use std::{fmt::Display, ops::Add, collections::HashSet};
+use std::{collections::HashSet, fmt::Display, ops::Add};
 
 use anyhow::Result;
 use tracing::debug;
 
-use crate::utils::{*, grid::Grid2D};
+use crate::utils::{grid::Grid2D, *};
 
 use super::super::AocDay;
 
@@ -16,7 +16,7 @@ pub enum Pipe {
     SW_Bend,
     SE_Bend,
     Ground,
-    Start
+    Start,
 }
 
 impl Pipe {
@@ -30,21 +30,21 @@ impl Pipe {
             'F' => Pipe::SE_Bend,
             '.' => Pipe::Ground,
             'S' => Pipe::Start,
-            _ => panic!("Found unexpected char while parsing Pipe")
+            _ => panic!("Found unexpected char while parsing Pipe"),
         }
     }
     // returns list of (x,y)
     fn get_connecting(&self) -> Vec<(i32, i32)> {
         match self {
-            Pipe::Hori => vec![(-1,0), (1,0)],
-            Pipe::Vert => vec![(0,-1), (0,1)],
+            Pipe::Hori => vec![(-1, 0), (1, 0)],
+            Pipe::Vert => vec![(0, -1), (0, 1)],
 
-            Pipe::NE_Bend => vec![(1,0), (0,-1)],
-            Pipe::NW_Bend => vec![(-1,0), (0,-1)],
-            
-            Pipe::SW_Bend => vec![(-1,0), (0,1)],
-            Pipe::SE_Bend => vec![(1,0), (0,1)],
-            
+            Pipe::NE_Bend => vec![(1, 0), (0, -1)],
+            Pipe::NW_Bend => vec![(-1, 0), (0, -1)],
+
+            Pipe::SW_Bend => vec![(-1, 0), (0, 1)],
+            Pipe::SE_Bend => vec![(1, 0), (0, 1)],
+
             Pipe::Ground => vec![],
             Pipe::Start => vec![],
         }
@@ -65,19 +65,26 @@ impl Pipe {
             };
             debug!("{} - {:?}{:?}", self, end_x, end_y);
             match (end_x, end_y) {
-                (Some(x), Some(y)) => points.push((x,y).into()),
-                (_,_) => continue,
+                (Some(x), Some(y)) => points.push((x, y).into()),
+                (_, _) => continue,
             };
         }
         points
     }
 
     pub fn can_connect(&self, localtion: &Point, destination: &Point) -> bool {
-        self.get_connecting_points(localtion).iter().any(|p| p == destination)
+        self.get_connecting_points(localtion)
+            .iter()
+            .any(|p| p == destination)
     }
 
     pub fn get_next(&self, localtion: &Point, previous: &Point) -> Point {
-        self.get_connecting_points(localtion).iter().filter(|&p| p != previous).next().unwrap().clone()
+        self.get_connecting_points(localtion)
+            .iter()
+            .filter(|&p| p != previous)
+            .next()
+            .unwrap()
+            .clone()
     }
 }
 
@@ -96,9 +103,7 @@ impl Display for Pipe {
     }
 }
 
-pub struct Day {
-
-}
+pub struct Day {}
 
 impl Day {
     pub fn new() -> Self {
@@ -108,7 +113,6 @@ impl Day {
 
 impl AocDay for Day {
     fn run_part1(&mut self, input: &[String]) -> Result<AoCResult> {
-
         let grid = Grid2D::parse(input, |s| s.chars().map(|c| Pipe::parse(c)).collect());
         let start = grid.find(|x| matches!(x, &Pipe::Start)).unwrap();
         let pipe_path = get_pipe_path(&start, &grid);
@@ -118,23 +122,20 @@ impl AocDay for Day {
     }
 
     fn run_part2(&mut self, input: &[String]) -> Result<AoCResult> {
-
         let grid = Grid2D::parse(input, |s| s.chars().map(|c| Pipe::parse(c)).collect());
         let start = grid.find(|x| matches!(x, &Pipe::Start)).unwrap();
         let pipe_path = get_pipe_path(&start, &grid);
-
-
 
         Ok(AoCResult::None)
     }
 }
 
 fn get_pipe_path(start: &Point, grid: &Grid2D<Pipe>) -> Vec<Point> {
-    
     let start = *start;
-    
+
     // lets get all neighbours that are not ground
-    let connecting_neighbours = Utils::get_neighbours_grid_cmp(start, &grid, |p| !matches!(p, &Pipe::Ground));
+    let connecting_neighbours =
+        Utils::get_neighbours_grid_cmp(start, &grid, |p| !matches!(p, &Pipe::Ground));
     let neighbouring_pipes: Vec<_> = connecting_neighbours
         .iter()
         .map(|&p| grid.get(p).unwrap())
@@ -177,7 +178,7 @@ fn vizualize_costs(visited: &Vec<Point>, grid: Grid2D<char>) {
     let mut step = 1;
     for i in 0..visited.len() / 2 {
         let head = visited[i];
-        let tail = visited[visited.len()-1-i];
+        let tail = visited[visited.len() - 1 - i];
 
         let val = cost_grid.get_mut(head).unwrap();
         *val = ('0' as u8 + step as u8) as char;
