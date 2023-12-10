@@ -35,6 +35,10 @@ struct AoCOptions {
     /// Verbose Logging
     #[arg(short, long, value_parser = clap::value_parser!(u8).range(1..=2))]
     part: Option<u8>,
+    
+    /// Run with a specific input. Formatted day_<input>.txt
+    #[arg(short, long)]
+    input: Option<String>,
 
     /// Verbose Logging
     #[arg(short, long)]
@@ -81,18 +85,18 @@ fn main() -> Result<()> {
     match cli.command {
         AoCCommands::Run => {
             let mut input_fetcher = InputFetcher::new(INPUT_FOLDER);
-            let input = input_fetcher.fetch(day, year, cli.test);
+            let input = input_fetcher.fetch(day, year, cli.test, &cli.input);
             commands::run::run_day(day, year, input, cli.part)
         }
         AoCCommands::Bench => {
             let mut input_fetcher = InputFetcher::new(INPUT_FOLDER);
-            let input = input_fetcher.fetch(day, year, cli.test);
+            let input = input_fetcher.fetch(day, year, cli.test, &cli.input);
             commands::bench::bench_day(day, year, input, cli.part)
         }
         AoCCommands::BenchAll => {
             for day in 1..=day {
                 let mut input_fetcher = InputFetcher::new(INPUT_FOLDER);
-                let input = input_fetcher.fetch(day, year, cli.test);
+                let input = input_fetcher.fetch(day, year, cli.test, &cli.input);
                 commands::bench::bench_day(day, year, input, cli.part)?;
             }
             Ok(())

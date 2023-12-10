@@ -1,7 +1,10 @@
-#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+use std::fmt::{Display, Debug};
+
+
+#[derive(Clone, Copy, PartialEq, PartialOrd)]
 pub struct Point {
-    x: usize,
-    y: usize,
+    pub x: usize,
+    pub y: usize,
 }
 
 impl Point {
@@ -35,6 +38,18 @@ impl Point {
     // }
 }
 
+impl Display for Point {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "(x:{}, y:{})", self.x, self.y)
+    }
+}
+
+impl Debug for Point {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self)
+    }
+}
+
 impl From<Point> for (usize, usize) {
     fn from(e: Point) -> (usize, usize) {
         let Point { x, y } = e;
@@ -42,8 +57,21 @@ impl From<Point> for (usize, usize) {
     }
 }
 
+impl From<&Point> for (usize, usize) {
+    fn from(e: &Point) -> (usize, usize) {
+        let Point { x, y } = e;
+        (*x, *y)
+    }
+}
+
 impl From<(usize, usize)> for Point {
     fn from(e: (usize, usize)) -> Point {
+        Point::new(e.0, e.1)
+    }
+}
+
+impl From<&(usize, usize)> for Point {
+    fn from(e: &(usize, usize)) -> Point {
         Point::new(e.0, e.1)
     }
 }

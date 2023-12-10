@@ -16,12 +16,12 @@ impl Day {
 }
 
 impl AocDay for Day {
-    fn run_part1(&mut self, input: &Vec<String>) -> Result<AoCResult> {
+    fn run_part1(&mut self, input: &[String]) -> Result<AoCResult> {
 
         Ok(AoCResult::None)
     }
 
-    fn run_part2(&mut self, input: &Vec<String>) -> Result<AoCResult> {
+    fn run_part2(&mut self, input: &[String]) -> Result<AoCResult> {
         Ok(AoCResult::None)
     }
 }
