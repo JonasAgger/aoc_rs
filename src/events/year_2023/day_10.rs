@@ -126,6 +126,10 @@ impl AocDay for Day {
         let start = grid.find(|x| matches!(x, &Pipe::Start)).unwrap();
         let pipe_path = get_pipe_path(&start, &grid);
 
+        let mut ff_grid = Grid2D::build(grid.width(), grid.height(), |x,y|Point::new(x, y));
+
+        
+
         Ok(AoCResult::None)
     }
 }

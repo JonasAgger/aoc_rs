@@ -2,6 +2,7 @@ pub mod aoc_result;
 pub mod grid;
 pub mod math_utils;
 pub mod point;
+pub mod slice_utils;
 
 use std::fmt::Display;
 

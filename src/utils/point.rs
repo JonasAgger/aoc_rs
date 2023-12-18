@@ -32,9 +32,9 @@ impl Point {
     //     (dist as f64).sqrt()
     // }
 
-    // pub fn manhattan_distance(&self, other: &Point) -> i64 {
-    //     (self.x - other.x).abs() + (self.y - other.y).abs()
-    // }
+    pub fn manhattan_distance(&self, other: &Point) -> usize {
+        self.x.abs_diff(other.x) + self.y.abs_diff(other.y)
+    }
 }
 
 impl Display for Point {

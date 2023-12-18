@@ -24,6 +24,21 @@ impl<T: Clone + Display> Grid2D<T> {
         }
     }
 
+    pub fn build<F: Fn(usize, usize) -> T>(row_width: usize, rows: usize, factory: F) -> Self { 
+        let mut backing_vec = Vec::with_capacity(row_width * rows);
+
+        for row in 0..rows {
+            for col in 0..row_width {
+                backing_vec[row*row_width + col] = factory(col, row);
+            }
+        }
+
+        Self {
+            backing_vec,
+            row_width,
+        }
+    }
+
     pub fn new(row_width: usize, rows: usize, default: T) -> Self {
         let backing_vec = vec![default; row_width * rows];
 
@@ -75,9 +90,31 @@ impl<T: Clone + Display> Grid2D<T> {
         None
     }
 
+    pub fn find_all<F: Fn(&T) -> bool>(&self, f: F) -> Vec<Point> {
+        self.backing_vec
+            .iter()
+            .enumerate()
+            .filter(|(_, item)| f(*item))
+            .map(|(index, _)| {
+                let y = index / self.row_width;
+                let x = index % self.row_width;
+                return Point::new(x, y);
+            })
+            .collect()
+    }
+
     pub fn is_within_bounds<P: Into<Point>>(&self, p: P) -> bool {
         let Point { x, y } = p.into();
         x <= self.width() && y <= self.height()
+    }
+
+    pub fn get_row(&self, row: usize) -> impl IntoIterator<Item = &T> {
+        let offset = row * self.row_width;
+        self.backing_vec[offset..offset+self.row_width].iter()
+    }
+
+    pub fn get_col(&self, col: usize) -> impl IntoIterator<Item = &T> {
+        self.backing_vec[col..].iter().step_by(self.row_width)
     }
 }
 
