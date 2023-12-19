@@ -1,4 +1,5 @@
 #![feature(slice_group_by)]
+#![feature(let_chains)]
 
 mod commands;
 mod day_generator;

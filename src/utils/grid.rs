@@ -1,7 +1,8 @@
-use std::fmt::Display;
+use std::{fmt::Display, hash::{Hasher, DefaultHasher}};
 
 use super::Point;
 
+#[derive(Debug, Clone)]
 pub struct Grid2D<T: Clone + Display> {
     backing_vec: Vec<T>,
     row_width: usize,
@@ -115,6 +116,15 @@ impl<T: Clone + Display> Grid2D<T> {
 
     pub fn get_col(&self, col: usize) -> impl IntoIterator<Item = &T> {
         self.backing_vec[col..].iter().step_by(self.row_width)
+    }
+}
+
+impl<T: Clone + Display + std::hash::Hash> Grid2D<T> {
+    pub fn hash_state(&self) -> u64 {
+        use std::hash::Hash;
+        let mut hasher = DefaultHasher::new();
+        self.backing_vec.hash(&mut hasher);
+        hasher.finish()
     }
 }
 
