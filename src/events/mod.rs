@@ -13,6 +13,7 @@ pub trait AocDay {
 pub fn get_day(day: u8, year: u16) -> Result<Box<dyn AocDay>> {
     match (day, year) {
         (10, 2023) => Ok(Box::new(year_2023::day_10::Day::new())),
+(14, 2023) => Ok(Box::new(year_2023::day_14::Day::new())),
 (4, 2023) => Ok(Box::new(year_2023::day_04::Day::new())),
 (5, 2023) => Ok(Box::new(year_2023::day_05::Day::new())),
 (11, 2023) => Ok(Box::new(year_2023::day_11::Day::new())),

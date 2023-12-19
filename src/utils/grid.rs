@@ -120,6 +120,7 @@ impl<T: Clone + Display> Grid2D<T> {
 
 impl<T: Clone + Display> Display for Grid2D<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        writeln!(f)?;
         for i in (0..self.backing_vec.len()).step_by(self.row_width) {
             for j in i..i + self.row_width {
                 write!(f, "{}", self.backing_vec[j])?;
