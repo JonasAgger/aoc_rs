@@ -1,4 +1,4 @@
-use std::{collections::HashSet, fmt::Display, ops::Add};
+use std::fmt::Display;
 
 use anyhow::Result;
 use tracing::debug;
@@ -79,12 +79,11 @@ impl Pipe {
     }
 
     pub fn get_next(&self, localtion: &Point, previous: &Point) -> Point {
-        self.get_connecting_points(localtion)
+        *self
+            .get_connecting_points(localtion)
             .iter()
-            .filter(|&p| p != previous)
-            .next()
+            .find(|&p| p != previous)
             .unwrap()
-            .clone()
     }
 }
 
@@ -113,7 +112,7 @@ impl Day {
 
 impl AocDay for Day {
     fn run_part1(&mut self, input: &[String]) -> Result<AoCResult> {
-        let grid = Grid2D::parse(input, |s| s.chars().map(|c| Pipe::parse(c)).collect());
+        let grid = Grid2D::parse(input, |s| s.chars().map(Pipe::parse).collect());
         let start = grid.find(|x| matches!(x, &Pipe::Start)).unwrap();
         let pipe_path = get_pipe_path(&start, &grid);
 
@@ -122,13 +121,11 @@ impl AocDay for Day {
     }
 
     fn run_part2(&mut self, input: &[String]) -> Result<AoCResult> {
-        let grid = Grid2D::parse(input, |s| s.chars().map(|c| Pipe::parse(c)).collect());
+        let grid = Grid2D::parse(input, |s| s.chars().map(Pipe::parse).collect());
         let start = grid.find(|x| matches!(x, &Pipe::Start)).unwrap();
-        let pipe_path = get_pipe_path(&start, &grid);
+        let _pipe_path = get_pipe_path(&start, &grid);
 
-        let mut ff_grid = Grid2D::build(grid.width(), grid.height(), |x,y|Point::new(x, y));
-
-        
+        let _ff_grid = Grid2D::build(grid.width(), grid.height(), Point::new);
 
         Ok(AoCResult::None)
     }
@@ -139,7 +136,7 @@ fn get_pipe_path(start: &Point, grid: &Grid2D<Pipe>) -> Vec<Point> {
 
     // lets get all neighbours that are not ground
     let connecting_neighbours =
-        Utils::get_neighbours_grid_cmp(start, &grid, |p| !matches!(p, &Pipe::Ground));
+        Utils::get_neighbours_grid_cmp(start, grid, |p| !matches!(p, &Pipe::Ground));
     let neighbouring_pipes: Vec<_> = connecting_neighbours
         .iter()
         .map(|&p| grid.get(p).unwrap())
@@ -147,7 +144,7 @@ fn get_pipe_path(start: &Point, grid: &Grid2D<Pipe>) -> Vec<Point> {
     let connectors: Vec<_> = connecting_neighbours
         .iter()
         .zip(neighbouring_pipes)
-        .filter(|(point, pipe)| pipe.can_connect(*point, &start))
+        .filter(|(point, pipe)| pipe.can_connect(point, &start))
         .map(|(point, _)| point)
         .collect();
 
@@ -160,7 +157,7 @@ fn get_pipe_path(start: &Point, grid: &Grid2D<Pipe>) -> Vec<Point> {
     while current != start {
         let pipe = grid.get(current).unwrap();
         let next = pipe.get_next(&current, &prev);
-        visited.push(current.clone());
+        visited.push(current);
         prev = current;
         current = next;
     }
@@ -185,9 +182,9 @@ fn vizualize_costs(visited: &Vec<Point>, grid: Grid2D<char>) {
         let tail = visited[visited.len() - 1 - i];
 
         let val = cost_grid.get_mut(head).unwrap();
-        *val = ('0' as u8 + step as u8) as char;
+        *val = (b'0' + step as u8) as char;
         let val = cost_grid.get_mut(tail).unwrap();
-        *val = ('0' as u8 + step as u8) as char;
+        *val = (b'0' + step as u8) as char;
 
         step += 1;
     }
@@ -197,7 +194,7 @@ fn vizualize_costs(visited: &Vec<Point>, grid: Grid2D<char>) {
         dbg!(missing);
         let missing = visited[missing];
         let val = cost_grid.get_mut(missing).unwrap();
-        *val = ('0' as u8 + step as u8) as char;
+        *val = (b'0' + step as u8) as char;
     }
 
     println!("{}", cost_grid);

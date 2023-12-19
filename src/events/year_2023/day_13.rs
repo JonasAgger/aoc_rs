@@ -3,27 +3,27 @@ use std::fmt::Display;
 use anyhow::Result;
 use tracing::debug;
 
-use crate::utils::{*, grid::Grid2D};
+use crate::utils::{grid::Grid2D, *};
 
 use super::super::AocDay;
 
 #[derive(Debug, PartialEq, PartialOrd)]
 enum RowCol {
     Row(usize),
-    Col(usize)
+    Col(usize),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 enum Env {
     Ash,
-    Rock
+    Rock,
 }
 
 impl Env {
     pub fn parse(c: char) -> Self {
         match c {
             '#' => Env::Rock,
-            _ => Env::Ash
+            _ => Env::Ash,
         }
     }
 }
@@ -37,9 +37,7 @@ impl Display for Env {
     }
 }
 
-pub struct Day {
-
-}
+pub struct Day {}
 
 impl Day {
     pub fn new() -> Self {
@@ -49,9 +47,11 @@ impl Day {
 
 impl AocDay for Day {
     fn run_part1(&mut self, input: &[String]) -> Result<AoCResult> {
-
         let parts = slice_utils::split_chunk_empty(input);
-        let grids: Vec<_> = parts.iter().map(|part| Grid2D::parse(part, |s| s.chars().map(Env::parse).collect())).collect();
+        let grids: Vec<_> = parts
+            .iter()
+            .map(|part| Grid2D::parse(part, |s| s.chars().map(Env::parse).collect()))
+            .collect();
 
         let mut result = 0;
 
@@ -70,7 +70,10 @@ impl AocDay for Day {
 
     fn run_part2(&mut self, input: &[String]) -> Result<AoCResult> {
         let parts = slice_utils::split_chunk_empty(input);
-        let grids: Vec<_> = parts.iter().map(|part| Grid2D::parse(part, |s| s.chars().map(Env::parse).collect())).collect();
+        let grids: Vec<_> = parts
+            .iter()
+            .map(|part| Grid2D::parse(part, |s| s.chars().map(Env::parse).collect()))
+            .collect();
 
         let mut result = 0;
 
@@ -84,11 +87,11 @@ impl AocDay for Day {
             debug!("{:?}", refection);
         }
 
-        Ok(result.into())    }
+        Ok(result.into())
+    }
 }
 
 fn find_reflection<M: Fn(&[usize], &[usize]) -> bool>(grid: &Grid2D<Env>, matches: M) -> RowCol {
-
     let col_values = get_col_values(grid);
     let row_values = get_row_values(grid);
 
@@ -147,7 +150,7 @@ fn matches_part2(left: &[usize], right: &[usize]) -> bool {
 
         diffs += 1;
     }
-    
+
     diffs == 1
 }
 
@@ -191,9 +194,6 @@ fn get_row_values(grid: &Grid2D<Env>) -> Vec<usize> {
     values
 }
 
-
-
-
 #[cfg(test)]
 mod test {
     use super::*;
@@ -201,19 +201,19 @@ mod test {
     #[test]
     fn test_edgecase_last() {
         let input: Vec<_> = vec![
-String::from("..#..#..##..#"),
-String::from("##.#..##..##."),
-String::from("..#.###.####."),
-String::from(".#.#.#...##.."),
-String::from(".##.#.#..#.##"),
-String::from("#####..#....."),
-String::from("#####..#....."),
-String::from(".##.#.#..#.##"),
-String::from(".#.#.#..###.."),
-String::from("..#.###.####."),
-String::from("##.#..##..##."),
-String::from("..#..#..##..#"),
-String::from("..#..#..##..#"),
+            String::from("..#..#..##..#"),
+            String::from("##.#..##..##."),
+            String::from("..#.###.####."),
+            String::from(".#.#.#...##.."),
+            String::from(".##.#.#..#.##"),
+            String::from("#####..#....."),
+            String::from("#####..#....."),
+            String::from(".##.#.#..#.##"),
+            String::from(".#.#.#..###.."),
+            String::from("..#.###.####."),
+            String::from("##.#..##..##."),
+            String::from("..#..#..##..#"),
+            String::from("..#..#..##..#"),
         ];
 
         let grid = Grid2D::parse(&input, |s| s.chars().map(Env::parse).collect());
@@ -232,16 +232,16 @@ String::from("..#..#..##..#"),
             "##......#".to_string(),
             "..#.##.#.".to_string(),
             "..##..##.".to_string(),
-            "#.#.##.#.".to_string()
-                    ];
-        
+            "#.#.##.#.".to_string(),
+        ];
+
         let grid = Grid2D::parse(&input, |s| s.chars().map(Env::parse).collect());
 
         let row_values = get_row_values(&grid);
 
         let matches = matches_part2(&row_values[..3], &row_values[3..]);
 
-        assert_eq!(matches, true)
+        assert!(matches)
     }
 
     #[test]
@@ -254,8 +254,8 @@ String::from("..#..#..##..#"),
             "#####.##.".to_string(),
             "..##..###".to_string(),
             "#....#..#".to_string(),
-                    ];
-        
+        ];
+
         let grid = Grid2D::parse(&input, |s| s.chars().map(Env::parse).collect());
 
         let row_values = find_reflection(&grid, matches_part2);
@@ -271,14 +271,16 @@ String::from("..#..#..##..#"),
             (10, true),
             (11, false),
             (100, true),
-            (1000, true)
+            (1000, true),
         ];
 
-
         for (input, expected) in cases {
-
             let actual = is_power_of_10_diff(input);
-            assert_eq!(actual, expected, "Checking if {} is a power of 10, expected: {}", input, expected);
+            assert_eq!(
+                actual, expected,
+                "Checking if {} is a power of 10, expected: {}",
+                input, expected
+            );
         }
     }
 }

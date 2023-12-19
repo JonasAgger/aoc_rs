@@ -1,10 +1,10 @@
 use core::panic;
-use std::{fmt::Display, collections::HashMap, time::{Duration, Instant}};
+use std::{collections::HashMap, fmt::Display};
 
 use anyhow::Result;
-use tracing::{debug, info};
+use tracing::debug;
 
-use crate::utils::{*, grid::Grid2D};
+use crate::utils::{grid::Grid2D, *};
 
 use super::super::AocDay;
 
@@ -12,7 +12,7 @@ use super::super::AocDay;
 enum Rock {
     Round,
     Cube,
-    Empty
+    Empty,
 }
 
 impl Rock {
@@ -20,7 +20,7 @@ impl Rock {
         match c {
             '#' => Rock::Cube,
             'O' => Rock::Round,
-            _ => Rock::Empty
+            _ => Rock::Empty,
         }
     }
 }
@@ -35,9 +35,7 @@ impl Display for Rock {
     }
 }
 
-pub struct Day {
-
-}
+pub struct Day {}
 
 impl Day {
     pub fn new() -> Self {
@@ -47,7 +45,6 @@ impl Day {
 
 impl AocDay for Day {
     fn run_part1(&mut self, input: &[String]) -> Result<AoCResult> {
-
         let mut grid = Grid2D::parse(input, |line| line.chars().map(Rock::parse).collect());
 
         tilt_north(&mut grid);
@@ -66,14 +63,16 @@ impl AocDay for Day {
 
             let row_value = round_count * value;
             total_value += row_value;
-            debug!("Row {} has {} round rocks with {} value each = {}", row, round_count, value, row_value);
+            debug!(
+                "Row {} has {} round rocks with {} value each = {}",
+                row, round_count, value, row_value
+            );
         }
 
         Ok(total_value.into())
     }
 
     fn run_part2(&mut self, input: &[String]) -> Result<AoCResult> {
-
         const ITERATIONS: usize = 1_000_000_000;
 
         let mut grid = Grid2D::parse(input, |line| line.chars().map(Rock::parse).collect());
@@ -91,7 +90,9 @@ impl AocDay for Day {
 
             let hash = grid.hash_state();
 
-            if let Some((expected_next, last, diff)) = expected_repeat && iteration == expected_next {
+            if let Some((expected_next, last, diff)) = expected_repeat
+                && iteration == expected_next
+            {
                 let hash_last = seen.entry(hash).or_default();
 
                 if last != *hash_last {
@@ -100,12 +101,13 @@ impl AocDay for Day {
                 }
 
                 repeat_times += 1;
-                if repeat_times > 5 { // just checking that it actually repeats. Is not really needed
+                if repeat_times > 5 {
+                    // just checking that it actually repeats. Is not really needed
 
                     let remainder = ITERATIONS - iteration;
                     let post = remainder % diff - 1;
 
-                    for i in 0..post {
+                    for _i in 0..post {
                         tilt_north(&mut grid);
                         tilt_west(&mut grid);
                         tilt_south(&mut grid);
@@ -125,35 +127,37 @@ impl AocDay for Day {
 
                         let row_value = round_count * value;
                         total_value += row_value;
-                        debug!("Row {} has {} round rocks with {} value each = {}", row, round_count, value, row_value);
+                        debug!(
+                            "Row {} has {} round rocks with {} value each = {}",
+                            row, round_count, value, row_value
+                        );
                     }
 
                     return Ok(total_value.into());
                 }
 
                 expected_repeat = Some((iteration + diff, last, diff));
-            }   
+            }
 
             let entry = seen.entry(hash);
 
             match entry {
                 // if we found a repeat, lets try to identify when it repeats next
                 std::collections::hash_map::Entry::Occupied(last_seen) => {
-                    if expected_repeat == None {
+                    if expected_repeat.is_none() {
                         let last = *last_seen.get();
                         let diff = iteration - last;
                         let next = iteration + diff;
                         expected_repeat = Some((next, last, diff));
                     }
-                },
+                }
                 std::collections::hash_map::Entry::Vacant(vacant) => {
                     vacant.insert(iteration);
-                },
+                }
             };
 
             iteration += 1;
-        }        
-        
+        }
 
         unreachable!()
     }
@@ -163,7 +167,7 @@ fn tilt_north(grid: &mut Grid2D<Rock>) {
     fn find_destination(grid: &&mut Grid2D<Rock>, current_row: usize, col_index: usize) -> usize {
         for row in (0..current_row).rev() {
             if *grid.get((col_index, row)).unwrap() != Rock::Empty {
-                return row+1;
+                return row + 1;
             }
         }
         0
@@ -171,14 +175,16 @@ fn tilt_north(grid: &mut Grid2D<Rock>) {
 
     let rows = grid.height();
     for row_index in 1..rows {
-
         let row: Vec<_> = grid.get_row(row_index).into_iter().copied().collect();
-        for (col_index, _) in row.iter().enumerate().filter(|(_, rock)| **rock == Rock::Round) {
-
+        for (col_index, _) in row
+            .iter()
+            .enumerate()
+            .filter(|(_, rock)| **rock == Rock::Round)
+        {
             let destination_row = find_destination(&grid, row_index, col_index);
 
             let rock_origin = grid.get_mut((col_index, row_index)).unwrap();
-            *rock_origin = Rock::Empty;            
+            *rock_origin = Rock::Empty;
 
             let rock_destination = grid.get_mut((col_index, destination_row)).unwrap();
             *rock_destination = Rock::Round;
@@ -188,24 +194,26 @@ fn tilt_north(grid: &mut Grid2D<Rock>) {
 
 fn tilt_south(grid: &mut Grid2D<Rock>) {
     fn find_destination(grid: &&mut Grid2D<Rock>, current_row: usize, col_index: usize) -> usize {
-        for row in current_row+1..grid.height() {
+        for row in current_row + 1..grid.height() {
             if *grid.get((col_index, row)).unwrap() != Rock::Empty {
-                return row-1;
+                return row - 1;
             }
         }
         grid.height() - 1
     }
 
     let rows = grid.height();
-    for row_index in (0..rows-1).rev() {
-
+    for row_index in (0..rows - 1).rev() {
         let row: Vec<_> = grid.get_row(row_index).into_iter().copied().collect();
-        for (col_index, _) in row.iter().enumerate().filter(|(_, rock)| **rock == Rock::Round) {
-
+        for (col_index, _) in row
+            .iter()
+            .enumerate()
+            .filter(|(_, rock)| **rock == Rock::Round)
+        {
             let destination_row = find_destination(&grid, row_index, col_index);
 
             let rock_origin = grid.get_mut((col_index, row_index)).unwrap();
-            *rock_origin = Rock::Empty;            
+            *rock_origin = Rock::Empty;
 
             let rock_destination = grid.get_mut((col_index, destination_row)).unwrap();
             *rock_destination = Rock::Round;
@@ -217,7 +225,7 @@ fn tilt_west(grid: &mut Grid2D<Rock>) {
     fn find_destination(grid: &&mut Grid2D<Rock>, current_col: usize, row_index: usize) -> usize {
         for col in (0..current_col).rev() {
             if *grid.get((col, row_index)).unwrap() != Rock::Empty {
-                return col+1;
+                return col + 1;
             }
         }
         0
@@ -225,14 +233,16 @@ fn tilt_west(grid: &mut Grid2D<Rock>) {
 
     let cols = grid.width();
     for col_index in 1..cols {
-
         let col: Vec<_> = grid.get_col(col_index).into_iter().copied().collect();
-        for (row_index, _) in col.iter().enumerate().filter(|(_, rock)| **rock == Rock::Round) {
-
+        for (row_index, _) in col
+            .iter()
+            .enumerate()
+            .filter(|(_, rock)| **rock == Rock::Round)
+        {
             let destination_col = find_destination(&grid, col_index, row_index);
 
             let rock_origin = grid.get_mut((col_index, row_index)).unwrap();
-            *rock_origin = Rock::Empty;            
+            *rock_origin = Rock::Empty;
 
             let rock_destination = grid.get_mut((destination_col, row_index)).unwrap();
             *rock_destination = Rock::Round;
@@ -240,27 +250,28 @@ fn tilt_west(grid: &mut Grid2D<Rock>) {
     }
 }
 
-
 fn tilt_east(grid: &mut Grid2D<Rock>) {
     fn find_destination(grid: &&mut Grid2D<Rock>, current_col: usize, row_index: usize) -> usize {
-        for col in current_col+1..grid.width() {
+        for col in current_col + 1..grid.width() {
             if *grid.get((col, row_index)).unwrap() != Rock::Empty {
-                return col-1;
+                return col - 1;
             }
         }
         grid.width() - 1
     }
 
     let cols = grid.width();
-    for col_index in (0..cols-1).rev() {
-
+    for col_index in (0..cols - 1).rev() {
         let col: Vec<_> = grid.get_col(col_index).into_iter().copied().collect();
-        for (row_index, _) in col.iter().enumerate().filter(|(_, rock)| **rock == Rock::Round) {
-
+        for (row_index, _) in col
+            .iter()
+            .enumerate()
+            .filter(|(_, rock)| **rock == Rock::Round)
+        {
             let destination_col = find_destination(&grid, col_index, row_index);
 
             let rock_origin = grid.get_mut((col_index, row_index)).unwrap();
-            *rock_origin = Rock::Empty;            
+            *rock_origin = Rock::Empty;
 
             let rock_destination = grid.get_mut((destination_col, row_index)).unwrap();
             *rock_destination = Rock::Round;
@@ -275,11 +286,11 @@ mod test {
     #[test]
     fn test_edgecase_last() {
         let input: Vec<_> = vec![
-String::from("..."),
-String::from(".#."),
-String::from(".O."),
-String::from("..."),
-String::from(".O."),
+            String::from("..."),
+            String::from(".#."),
+            String::from(".O."),
+            String::from("..."),
+            String::from(".O."),
         ];
 
         let mut grid = Grid2D::parse(&input, |s| s.chars().map(Rock::parse).collect());
@@ -287,18 +298,18 @@ String::from(".O."),
 
         let found = grid.find_all(|r| *r == Rock::Round);
 
-        assert_eq!(Point::new(1,2), *found.first().unwrap(), "first");
-        assert_eq!(Point::new(1,3), *found.last().unwrap(), "last");
+        assert_eq!(Point::new(1, 2), *found.first().unwrap(), "first");
+        assert_eq!(Point::new(1, 3), *found.last().unwrap(), "last");
     }
 
     #[test]
     fn test_tilt_south() {
         let input: Vec<_> = vec![
-String::from("..."),
-String::from(".#."),
-String::from(".O."),
-String::from("..."),
-String::from(".O."),
+            String::from("..."),
+            String::from(".#."),
+            String::from(".O."),
+            String::from("..."),
+            String::from(".O."),
         ];
 
         let mut grid = Grid2D::parse(&input, |s| s.chars().map(Rock::parse).collect());
@@ -306,8 +317,8 @@ String::from(".O."),
 
         let found = grid.find_all(|r| *r == Rock::Round);
 
-        assert_eq!(Point::new(1,3), *found.first().unwrap(), "first");
-        assert_eq!(Point::new(1,4), *found.last().unwrap(), "last");
+        assert_eq!(Point::new(1, 3), *found.first().unwrap(), "first");
+        assert_eq!(Point::new(1, 4), *found.last().unwrap(), "last");
     }
 
     #[test]
@@ -391,7 +402,6 @@ String::from(".O."),
         assert_eq!(format!("{}", grid), format!("{}", south_grid), "south");
         tilt_east(&mut grid);
         assert_eq!(format!("{}", grid), format!("{}", east_grid), "east");
-
     }
 
     #[test]

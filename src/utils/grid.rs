@@ -1,4 +1,7 @@
-use std::{fmt::Display, hash::{Hasher, DefaultHasher}};
+use std::{
+    fmt::Display,
+    hash::{DefaultHasher, Hasher},
+};
 
 use super::Point;
 
@@ -25,12 +28,12 @@ impl<T: Clone + Display> Grid2D<T> {
         }
     }
 
-    pub fn build<F: Fn(usize, usize) -> T>(row_width: usize, rows: usize, factory: F) -> Self { 
+    pub fn build<F: Fn(usize, usize) -> T>(row_width: usize, rows: usize, factory: F) -> Self {
         let mut backing_vec = Vec::with_capacity(row_width * rows);
 
         for row in 0..rows {
             for col in 0..row_width {
-                backing_vec[row*row_width + col] = factory(col, row);
+                backing_vec[row * row_width + col] = factory(col, row);
             }
         }
 
@@ -99,7 +102,7 @@ impl<T: Clone + Display> Grid2D<T> {
             .map(|(index, _)| {
                 let y = index / self.row_width;
                 let x = index % self.row_width;
-                return Point::new(x, y);
+                Point::new(x, y)
             })
             .collect()
     }
@@ -111,7 +114,7 @@ impl<T: Clone + Display> Grid2D<T> {
 
     pub fn get_row(&self, row: usize) -> impl IntoIterator<Item = &T> {
         let offset = row * self.row_width;
-        self.backing_vec[offset..offset+self.row_width].iter()
+        self.backing_vec[offset..offset + self.row_width].iter()
     }
 
     pub fn get_col(&self, col: usize) -> impl IntoIterator<Item = &T> {

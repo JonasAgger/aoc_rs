@@ -43,7 +43,7 @@ impl AocDay for Day {
             .zip(distances.iter())
             .map(|(&time, &dist)| self.solve_for_zeros(time, dist))
             .map(|(min, max)| (max - min) + 1) // have to push to be inclusive here
-            .fold(1, |acc, dist| acc * dist);
+            .product::<usize>();
 
         Ok(accum.into())
     }

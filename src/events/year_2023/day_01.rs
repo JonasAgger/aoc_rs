@@ -46,7 +46,7 @@ impl AocDay for Day {
                     _ => Ok(0),
                 };
 
-                sum.expect(format!("Could not parse digits from vec: {:?}", digits).as_str())
+                sum.unwrap_or_else(|_| panic!("Could not parse digits from vec: {:?}", digits))
             })
             .sum();
 

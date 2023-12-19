@@ -62,7 +62,7 @@ impl DayGenerator {
 
         let year_path = PathBuf::from(&self.file_path).join(format!("year_{}", year));
 
-        let dir_entry = match std::fs::read_dir(&year_path) {
+        let dir_entry = match std::fs::read_dir(year_path) {
             Ok(dir) => dir,
             Err(_) => return Ok(next),
         };
