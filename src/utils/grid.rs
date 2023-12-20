@@ -109,7 +109,7 @@ impl<T: Clone + Display> Grid2D<T> {
 
     pub fn is_within_bounds<P: Into<Point>>(&self, p: P) -> bool {
         let Point { x, y } = p.into();
-        x <= self.width() && y <= self.height()
+        x < self.width() && y < self.height()
     }
 
     pub fn get_row(&self, row: usize) -> impl IntoIterator<Item = &T> {

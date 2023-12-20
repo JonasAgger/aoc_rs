@@ -1,6 +1,6 @@
 use std::fmt::{Debug, Display};
 
-#[derive(Clone, Copy, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, PartialEq, PartialOrd, Eq, Ord, Hash)]
 pub struct Point {
     pub x: usize,
     pub y: usize,
@@ -17,6 +17,22 @@ impl Point {
 
     pub fn y(&self) -> usize {
         self.y
+    }
+
+    pub fn add_x(&self, x: usize) -> Option<Self> {
+        self.x.checked_add(x).map(|new_x| Point::new(new_x, self.y))
+    }
+
+    pub fn sub_x(&self, x: usize) -> Option<Self> {
+        self.x.checked_sub(x).map(|new_x| Point::new(new_x, self.y))
+    }
+
+    pub fn add_y(&self, y: usize) -> Option<Self> {
+        self.y.checked_add(y).map(|new_y| Point::new(self.x, new_y))
+    }
+
+    pub fn sub_y(&self, y: usize) -> Option<Self> {
+        self.y.checked_sub(y).map(|new_y| Point::new(self.x, new_y))
     }
 
     // pub fn is_neighbour_straight(&self, other: &Point) -> bool {
