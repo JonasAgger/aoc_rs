@@ -82,6 +82,15 @@ impl AocDay for Day {
         let mut expected_repeat = None;
         let mut repeat_times = 0;
 
+        // Basically we're expecting the sequence to repeat at one point.
+        // Once we find the repeating cycle, we can just jump forward to the last couple of iterations, which we have to do.
+        // We know it repeats, so we can find where to iterate through the last by
+        // ITERATIONS - current_iteration gives us our missing iteration count.
+        // then we can reduce the missing iteration count by taking missing_iterations mod cycle_time - 1 ("-1" since we're currently already at a repeating iteration)
+
+        // this means that we at max only have to iterate till we find a repeating pattern, and then one cycle_time more.
+        
+
         while iteration < ITERATIONS {
             tilt_north(&mut grid);
             tilt_west(&mut grid);
