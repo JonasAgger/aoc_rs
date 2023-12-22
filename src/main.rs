@@ -1,5 +1,7 @@
 #![feature(slice_group_by)]
 #![feature(let_chains)]
+#![feature(iter_map_windows)]
+#![allow(dead_code)]
 
 mod commands;
 mod day_generator;
@@ -59,7 +61,7 @@ enum AoCCommands {
 }
 
 fn main() -> Result<()> {
-    let mut cli = AoCOptions::parse();
+    let cli = AoCOptions::parse();
 
     let subscriber = FmtSubscriber::builder()
         .with_max_level(match (&cli.verbose, &cli.trace) {
@@ -75,18 +77,19 @@ fn main() -> Result<()> {
     let now = time::OffsetDateTime::now_utc();
 
     // Replace year and date
+
+    let mut day = cli.day.unwrap_or_default();
+    let mut year = cli.year.unwrap_or_default();
+
     if cli.year.is_none() {
-        cli.year = Some(now.year() as u16);
+        year = now.year() as u16;
     }
 
     if cli.day.is_none() {
-        cli.day = Some(day_generator.get_current_day(cli.year.unwrap())?)
+        day = day_generator.get_current_day(year)?
     }
 
     debug!("{:?}", cli);
-
-    let day = cli.day.unwrap();
-    let year = cli.year.unwrap();
 
     match cli.command {
         AoCCommands::Run => {

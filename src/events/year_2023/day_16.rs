@@ -1,10 +1,9 @@
 use std::{
-    collections::{HashMap, HashSet, VecDeque},
+    collections::{HashSet, VecDeque},
     fmt::Display,
 };
 
 use anyhow::Result;
-use tracing::debug;
 
 use crate::utils::{grid::Grid2D, *};
 

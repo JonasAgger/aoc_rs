@@ -11,10 +11,10 @@ use super::super::AocDay;
 pub enum Pipe {
     Vert,
     Hori,
-    NE_Bend,
-    NW_Bend,
-    SW_Bend,
-    SE_Bend,
+    NeBend,
+    NwBend,
+    SwBend,
+    SeBend,
     Ground,
     Start,
 }
@@ -24,10 +24,10 @@ impl Pipe {
         match c {
             '|' => Pipe::Vert,
             '-' => Pipe::Hori,
-            'L' => Pipe::NE_Bend,
-            'J' => Pipe::NW_Bend,
-            '7' => Pipe::SW_Bend,
-            'F' => Pipe::SE_Bend,
+            'L' => Pipe::NeBend,
+            'J' => Pipe::NwBend,
+            '7' => Pipe::SwBend,
+            'F' => Pipe::SeBend,
             '.' => Pipe::Ground,
             'S' => Pipe::Start,
             _ => panic!("Found unexpected char while parsing Pipe"),
@@ -39,11 +39,11 @@ impl Pipe {
             Pipe::Hori => vec![(-1, 0), (1, 0)],
             Pipe::Vert => vec![(0, -1), (0, 1)],
 
-            Pipe::NE_Bend => vec![(1, 0), (0, -1)],
-            Pipe::NW_Bend => vec![(-1, 0), (0, -1)],
+            Pipe::NeBend => vec![(1, 0), (0, -1)],
+            Pipe::NwBend => vec![(-1, 0), (0, -1)],
 
-            Pipe::SW_Bend => vec![(-1, 0), (0, 1)],
-            Pipe::SE_Bend => vec![(1, 0), (0, 1)],
+            Pipe::SwBend => vec![(-1, 0), (0, 1)],
+            Pipe::SeBend => vec![(1, 0), (0, 1)],
 
             Pipe::Ground => vec![],
             Pipe::Start => vec![],
@@ -92,10 +92,10 @@ impl Display for Pipe {
         match self {
             Pipe::Vert => write!(f, "|"),
             Pipe::Hori => write!(f, "-"),
-            Pipe::NE_Bend => write!(f, "L"),
-            Pipe::NW_Bend => write!(f, "J"),
-            Pipe::SW_Bend => write!(f, "7"),
-            Pipe::SE_Bend => write!(f, "F"),
+            Pipe::NeBend => write!(f, "L"),
+            Pipe::NwBend => write!(f, "J"),
+            Pipe::SwBend => write!(f, "7"),
+            Pipe::SeBend => write!(f, "F"),
             Pipe::Ground => write!(f, "."),
             Pipe::Start => write!(f, "S"),
         }

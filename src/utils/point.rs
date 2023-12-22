@@ -8,6 +8,54 @@ pub struct Point {
     pub y: usize,
 }
 
+#[derive(Clone, Copy, PartialEq, PartialOrd, Eq, Ord, Hash)]
+pub struct IPoint {
+    pub x: i64,
+    pub y: i64,
+}
+
+impl IPoint {
+    pub fn new(x: i64, y: i64) -> Self {
+        Self { x, y }
+    }
+
+    pub fn x(&self) -> i64 {
+        self.x
+    }
+
+    pub fn y(&self) -> i64 {
+        self.y
+    }
+
+    pub fn add_x(&self, x: i64) -> Option<Self> {
+        self.x
+            .checked_add(x)
+            .map(|new_x| IPoint::new(new_x, self.y))
+    }
+
+    pub fn sub_x(&self, x: i64) -> Option<Self> {
+        self.x
+            .checked_sub(x)
+            .map(|new_x| IPoint::new(new_x, self.y))
+    }
+
+    pub fn add_y(&self, y: i64) -> Option<Self> {
+        self.y
+            .checked_add(y)
+            .map(|new_y| IPoint::new(self.x, new_y))
+    }
+
+    pub fn sub_y(&self, y: i64) -> Option<Self> {
+        self.y
+            .checked_sub(y)
+            .map(|new_y| IPoint::new(self.x, new_y))
+    }
+
+    pub fn manhattan_distance(&self, other: &IPoint) -> i64 {
+        (self.x.abs_diff(other.x) + self.y.abs_diff(other.y)) as i64
+    }
+}
+
 impl Point {
     pub fn new(x: usize, y: usize) -> Self {
         Self { x, y }

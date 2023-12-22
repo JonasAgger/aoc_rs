@@ -16,7 +16,7 @@ impl Lens {
             return Self(p1.to_string(), '=', p2.parse().unwrap());
         }
 
-        if let Some((p1, p2)) = s.split_once('-') {
+        if let Some((p1, _)) = s.split_once('-') {
             return Self(p1.to_string(), '-', 0);
         }
         unreachable!()
