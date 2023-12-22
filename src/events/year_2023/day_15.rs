@@ -13,19 +13,19 @@ struct Lens(String, char, usize);
 impl Lens {
     fn new(s: &str) -> Self {
         if let Some((p1, p2)) = s.split_once('=') {
-            return Self(p1.to_string(), '=', p2.parse().unwrap())
+            return Self(p1.to_string(), '=', p2.parse().unwrap());
         }
 
         if let Some((p1, p2)) = s.split_once('-') {
-            return Self(p1.to_string(), '-', 0)
-        }    
+            return Self(p1.to_string(), '-', 0);
+        }
         unreachable!()
     }
 }
 
 #[derive(Debug, Clone)]
 struct Box {
-    items: Vec<Lens>
+    items: Vec<Lens>,
 }
 
 impl Display for Box {
@@ -55,7 +55,11 @@ impl Box {
     }
 
     fn remove(&mut self, lens: Lens) {
-        let res = self.items.iter().enumerate().find(|(_, item)| item.0 == lens.0);
+        let res = self
+            .items
+            .iter()
+            .enumerate()
+            .find(|(_, item)| item.0 == lens.0);
 
         if let Some((index, _)) = res {
             self.items.remove(index);
@@ -85,7 +89,6 @@ impl Day {
 
 impl AocDay for Day {
     fn run_part1(&mut self, input: &[String]) -> Result<AoCResult> {
-
         let inputs = input[0].split(',');
 
         let mut hashed_value = 0usize;
@@ -98,7 +101,6 @@ impl AocDay for Day {
     }
 
     fn run_part2(&mut self, input: &[String]) -> Result<AoCResult> {
-
         let inputs = input[0].split(',');
 
         let mut boxes = vec![Box::new(); 256];
@@ -112,7 +114,7 @@ impl AocDay for Day {
             match lens.1 {
                 '=' => boxes[box_index].add(lens),
                 '-' => boxes[box_index].remove(lens),
-                _ => unreachable!()
+                _ => unreachable!(),
             };
         }
 
@@ -120,7 +122,7 @@ impl AocDay for Day {
         for (index, hash_box) in boxes.iter().enumerate().filter(|b| b.1.any()) {
             let box_value = (index + 1) * hash_box.value();
             total_value += box_value;
-            debug!("Box {} = {} has value = {}", index, hash_box, box_value   );
+            debug!("Box {} = {} has value = {}", index, hash_box, box_value);
         }
 
         Ok(total_value.into())
@@ -129,7 +131,7 @@ impl AocDay for Day {
 
 fn hash(input: &str) -> u8 {
     let mut hash = 0u8;
-    
+
     for b in input.as_bytes() {
         hash = hash.overflowing_add(*b).0;
         hash = hash.overflowing_mul(17).0;

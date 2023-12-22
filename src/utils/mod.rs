@@ -3,6 +3,7 @@ pub mod grid;
 pub mod math_utils;
 pub mod point;
 pub mod slice_utils;
+pub mod vec2d;
 
 use std::fmt::Display;
 
@@ -60,6 +61,17 @@ impl Utils {
         get_neighbours(p.into(), map.width(), map.height())
             .filter(|&(x, y)| cmp(map.get((x, y)).unwrap()))
             .map(|t| t.into())
+            .collect()
+    }
+
+    pub fn get_neighbours_straight<P: Into<Point>, T: PartialEq + Clone + Display>(
+        p: P,
+        map: &Grid2D<T>,
+    ) -> Vec<Point> {
+        let point = p.into();
+        get_neighbours(point, map.width(), map.height())
+            .map(|p| Point::from(p))
+            .filter(|p| point.is_neighbour_straight(p))
             .collect()
     }
 }

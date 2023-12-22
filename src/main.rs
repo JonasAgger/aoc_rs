@@ -44,6 +44,10 @@ struct AoCOptions {
     /// Verbose Logging
     #[arg(short, long)]
     verbose: bool,
+
+    /// Very Verbose Logging
+    #[arg(long = "trace")]
+    trace: bool,
 }
 
 #[derive(Subcommand, Debug, Clone, ValueEnum)]
@@ -58,9 +62,10 @@ fn main() -> Result<()> {
     let mut cli = AoCOptions::parse();
 
     let subscriber = FmtSubscriber::builder()
-        .with_max_level(match &cli.verbose {
-            true => Level::DEBUG,
-            false => Level::INFO,
+        .with_max_level(match (&cli.verbose, &cli.trace) {
+            (_, true) => Level::TRACE,
+            (true, false) => Level::DEBUG,
+            (false, false) => Level::INFO,
         })
         .finish();
     tracing::subscriber::set_global_default(subscriber)?;
@@ -102,6 +107,12 @@ fn main() -> Result<()> {
             }
             Ok(())
         }
-        AoCCommands::Create => day_generator.generate_day(day + 1, year),
+        AoCCommands::Create => day_generator.generate_day(
+            match cli.day {
+                Some(day) => day,
+                None => day + 1,
+            },
+            year,
+        ),
     }
 }

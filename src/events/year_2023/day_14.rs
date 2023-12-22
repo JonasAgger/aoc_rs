@@ -89,7 +89,6 @@ impl AocDay for Day {
         // then we can reduce the missing iteration count by taking missing_iterations mod cycle_time - 1 ("-1" since we're currently already at a repeating iteration)
 
         // this means that we at max only have to iterate till we find a repeating pattern, and then one cycle_time more.
-        
 
         while iteration < ITERATIONS {
             tilt_north(&mut grid);

@@ -1,5 +1,7 @@
 use std::fmt::{Debug, Display};
 
+use super::vec2d::Vec2D;
+
 #[derive(Clone, Copy, PartialEq, PartialOrd, Eq, Ord, Hash)]
 pub struct Point {
     pub x: usize,
@@ -35,21 +37,28 @@ impl Point {
         self.y.checked_sub(y).map(|new_y| Point::new(self.x, new_y))
     }
 
-    // pub fn is_neighbour_straight(&self, other: &Point) -> bool {
-    //     self.x.abs_diff(other.x) == 1 && self.y.abs_diff(other.y) == 1
-    // }
+    pub fn is_neighbour_straight(&self, other: &Point) -> bool {
+        (self.x.abs_diff(other.x) + self.y.abs_diff(other.y)) == 1
+    }
 
     pub fn is_neighbour_diag(&self, other: &Point) -> bool {
         self.x.abs_diff(other.x) <= 1 && self.y.abs_diff(other.y) <= 1
     }
 
-    // pub fn euclidian_distance(&self, other: &Point) -> f64 {
-    //     let dist = (self.x - other.x).pow(2) + (self.y - other.y).pow(2);
-    //     (dist as f64).sqrt()
-    // }
+    pub fn euclidian_distance_lossy(&self, other: &Point) -> usize {
+        let dist = (self.x - other.x).pow(2) + (self.y - other.y).pow(2);
+        (dist as f64).sqrt() as usize
+    }
 
     pub fn manhattan_distance(&self, other: &Point) -> usize {
         self.x.abs_diff(other.x) + self.y.abs_diff(other.y)
+    }
+
+    pub fn get_diff<P: Into<Point>>(&self, other: P) -> Vec2D {
+        let Point { x, y } = other.into();
+        let x = self.x as i64 - x as i64;
+        let y = self.y as i64 - y as i64;
+        Vec2D::new(x, y)
     }
 }
 

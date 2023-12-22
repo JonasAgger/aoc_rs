@@ -1,9 +1,12 @@
-use std::{fmt::Display, collections::{VecDeque, HashSet, HashMap}};
+use std::{
+    collections::{HashMap, HashSet, VecDeque},
+    fmt::Display,
+};
 
 use anyhow::Result;
 use tracing::debug;
 
-use crate::utils::{*, grid::Grid2D};
+use crate::utils::{grid::Grid2D, *};
 
 use super::super::AocDay;
 
@@ -13,7 +16,7 @@ enum Mirror {
     RMirror,
     LMirror,
     HSplitter,
-    VSplitter
+    VSplitter,
 }
 
 impl Mirror {
@@ -24,7 +27,7 @@ impl Mirror {
             '\\' => Self::LMirror,
             '-' => Self::HSplitter,
             '|' => Self::VSplitter,
-            _ => unreachable!()
+            _ => unreachable!(),
         }
     }
 
@@ -72,7 +75,12 @@ impl Display for Mirror {
 }
 
 #[derive(Debug, Hash, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-enum Direction { Up, Down, Left, Right }
+enum Direction {
+    Up,
+    Down,
+    Left,
+    Right,
+}
 
 impl Direction {
     fn inverse(&self) -> Self {
@@ -88,9 +96,7 @@ impl Direction {
 #[derive(Debug, Hash, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 struct Beam(Point, Direction);
 
-pub struct Day {
-
-}
+pub struct Day {}
 
 impl Day {
     pub fn new() -> Self {
@@ -100,7 +106,6 @@ impl Day {
 
 impl AocDay for Day {
     fn run_part1(&mut self, input: &[String]) -> Result<AoCResult> {
-
         let mut grid = Grid2D::parse(input, |l| l.chars().map(Mirror::parse).collect());
 
         let points = solve(Beam(Point::new(0, 0), Direction::Right), &mut grid);
@@ -115,17 +120,17 @@ impl AocDay for Day {
 
         for i in 0..grid.width() {
             starts.push(Beam(Point::new(i, 0), Direction::Down));
-            starts.push(Beam(Point::new(i, grid.height()-1), Direction::Up));
+            starts.push(Beam(Point::new(i, grid.height() - 1), Direction::Up));
         }
 
         for i in 0..grid.height() {
             starts.push(Beam(Point::new(0, i), Direction::Right));
-            starts.push(Beam(Point::new(grid.width()-1, i), Direction::Left));
+            starts.push(Beam(Point::new(grid.width() - 1, i), Direction::Left));
         }
 
         let points = starts.iter().map(|b| solve(*b, &mut grid)).max().unwrap();
 
-        Ok(points.into())    
+        Ok(points.into())
     }
 }
 
@@ -154,7 +159,9 @@ fn solve(start_beam: Beam, grid: &mut Grid2D<Mirror>) -> usize {
             Direction::Right => beam.0.add_x(1),
         };
 
-        if let Some(point) = next_point && grid.is_within_bounds(point) {
+        if let Some(point) = next_point
+            && grid.is_within_bounds(point)
+        {
             let space = grid.get(point).unwrap();
 
             let next_direction = space.next_direction(beam.1);
@@ -163,8 +170,8 @@ fn solve(start_beam: Beam, grid: &mut Grid2D<Mirror>) -> usize {
                 Mirror::HSplitter | Mirror::VSplitter => {
                     beams.push_back(Beam(point, next_direction.inverse()));
                     beams.push_back(Beam(point, next_direction));
-                },
-                _ => beams.push_back(Beam(point, next_direction))
+                }
+                _ => beams.push_back(Beam(point, next_direction)),
             };
         }
     }
