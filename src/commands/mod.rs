@@ -96,15 +96,14 @@ impl InputFetcher {
         let start = text.find("<pre><code>");
         let end = text.find("</code></pre>");
 
-        if let Some(mut start) = start {
-            if let Some(end) = end {
+        match (start, end) {
+            (Some(mut start), Some(end)) => {
                 start += "<pre><code>".len();
 
                 return text[start..end].lines().map(|s| s.into()).collect();
             }
+            _ => vec![],
         }
-
-        vec![]
     }
 
     fn fetch_cookie(&mut self) {
