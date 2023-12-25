@@ -7,6 +7,7 @@ mod commands;
 mod day_generator;
 pub mod events;
 pub mod utils;
+pub mod vm;
 
 use anyhow::Result;
 use clap::{Parser, Subcommand, ValueEnum};

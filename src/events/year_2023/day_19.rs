@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
-use fancy_regex::RegexBuilder;
+
 
 use crate::utils::*;
 
@@ -35,7 +35,7 @@ impl AocDay for Day {
         Ok(total.into())
     }
 
-    fn run_part2(&mut self, input: &[String]) -> Result<AoCResult> {
+    fn run_part2(&mut self, _input: &[String]) -> Result<AoCResult> {
         Ok(AoCResult::None)
     }
 }

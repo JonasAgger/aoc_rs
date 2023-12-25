@@ -1,8 +1,9 @@
 use anyhow::Result;
 
 use crate::utils::*;
+use crate::vm::VM;
 
-use super::{super::AocDay, VM};
+use super::super::AocDay;
 
 pub struct Day {}
 
@@ -23,7 +24,7 @@ impl AocDay for Day {
         let mut vm = VM::new(instruction_set);
         vm.execute();
 
-        Ok(vm.get_value_at(0).into())
+        Ok(vm.memory().get_value(0).into())
     }
 
     fn run_part2(&mut self, input: &[String]) -> Result<AoCResult> {
@@ -36,7 +37,7 @@ impl AocDay for Day {
         let mut vm = VM::new(instruction_set);
         vm.execute();
 
-        Ok(vm.get_value_at(0).into())
+        Ok(vm.memory().get_value(0).into())
     }
 }
 
@@ -54,7 +55,7 @@ mod test {
 
         vm.execute();
 
-        assert_eq!(expected, vm.instructions())
+        assert_eq!(expected, vm.memory().instructions())
     }
     #[test]
     fn testcase2() {
@@ -66,7 +67,7 @@ mod test {
 
         vm.execute();
 
-        assert_eq!(expected, vm.instructions())
+        assert_eq!(expected, vm.memory().instructions())
     }
 
     #[test]
@@ -79,7 +80,7 @@ mod test {
 
         vm.execute();
 
-        assert_eq!(expected, vm.instructions())
+        assert_eq!(expected, vm.memory().instructions())
     }
 
     #[test]
@@ -92,6 +93,6 @@ mod test {
 
         vm.execute();
 
-        assert_eq!(expected, vm.instructions())
+        assert_eq!(expected, vm.memory().instructions())
     }
 }
