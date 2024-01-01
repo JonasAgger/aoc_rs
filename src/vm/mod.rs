@@ -1,6 +1,6 @@
 pub mod memory;
 
-use std::sync::mpsc::{Sender, Receiver, channel};
+use std::sync::mpsc::{channel, Receiver, Sender};
 
 use self::memory::Memory;
 
@@ -27,42 +27,53 @@ pub enum OpCodeArgument {
 
 impl OpCode {
     pub fn get_instruction(memory: &Memory, instruction_pointer: usize) -> Self {
-
         let ins = memory.get_value(instruction_pointer);
         let instruction = ins % 100;
 
         match instruction {
             1 => Self::Addition(
-                Self::get_argument(ins, memory.get_value(instruction_pointer+1), 1),
-                Self::get_argument(ins, memory.get_value(instruction_pointer+2), 2),
-                Self::get_argument(ins, memory.get_value(instruction_pointer+3), 3),
+                Self::get_argument(ins, memory.get_value(instruction_pointer + 1), 1),
+                Self::get_argument(ins, memory.get_value(instruction_pointer + 2), 2),
+                Self::get_argument(ins, memory.get_value(instruction_pointer + 3), 3),
             ),
             2 => Self::Multiplication(
-                Self::get_argument(ins, memory.get_value(instruction_pointer+1), 1),
-                Self::get_argument(ins, memory.get_value(instruction_pointer+2), 2),
-                Self::get_argument(ins, memory.get_value(instruction_pointer+3), 3),
+                Self::get_argument(ins, memory.get_value(instruction_pointer + 1), 1),
+                Self::get_argument(ins, memory.get_value(instruction_pointer + 2), 2),
+                Self::get_argument(ins, memory.get_value(instruction_pointer + 3), 3),
             ),
-            3 => Self::Input(Self::get_argument(ins, memory.get_value(instruction_pointer+1), 1)),
-            4 => Self::Output(Self::get_argument(ins, memory.get_value(instruction_pointer+1), 1)),
+            3 => Self::Input(Self::get_argument(
+                ins,
+                memory.get_value(instruction_pointer + 1),
+                1,
+            )),
+            4 => Self::Output(Self::get_argument(
+                ins,
+                memory.get_value(instruction_pointer + 1),
+                1,
+            )),
             5 => Self::JumpIfTrue(
-                Self::get_argument(ins, memory.get_value(instruction_pointer+1), 1),
-                Self::get_argument(ins, memory.get_value(instruction_pointer+2), 2),
+                Self::get_argument(ins, memory.get_value(instruction_pointer + 1), 1),
+                Self::get_argument(ins, memory.get_value(instruction_pointer + 2), 2),
             ),
             6 => Self::JumpIfFalse(
-                Self::get_argument(ins, memory.get_value(instruction_pointer+1), 1),
-                Self::get_argument(ins, memory.get_value(instruction_pointer+2), 2),
+                Self::get_argument(ins, memory.get_value(instruction_pointer + 1), 1),
+                Self::get_argument(ins, memory.get_value(instruction_pointer + 2), 2),
             ),
             7 => Self::LessThan(
-                Self::get_argument(ins, memory.get_value(instruction_pointer+1), 1),
-                Self::get_argument(ins, memory.get_value(instruction_pointer+2), 2),
-                Self::get_argument(ins, memory.get_value(instruction_pointer+3), 3),
+                Self::get_argument(ins, memory.get_value(instruction_pointer + 1), 1),
+                Self::get_argument(ins, memory.get_value(instruction_pointer + 2), 2),
+                Self::get_argument(ins, memory.get_value(instruction_pointer + 3), 3),
             ),
             8 => Self::Equals(
-                Self::get_argument(ins, memory.get_value(instruction_pointer+1), 1),
-                Self::get_argument(ins, memory.get_value(instruction_pointer+2), 2),
-                Self::get_argument(ins, memory.get_value(instruction_pointer+3), 3),
+                Self::get_argument(ins, memory.get_value(instruction_pointer + 1), 1),
+                Self::get_argument(ins, memory.get_value(instruction_pointer + 2), 2),
+                Self::get_argument(ins, memory.get_value(instruction_pointer + 3), 3),
             ),
-            9 => Self::RelativeBase(Self::get_argument(ins, memory.get_value(instruction_pointer+1), 1)),
+            9 => Self::RelativeBase(Self::get_argument(
+                ins,
+                memory.get_value(instruction_pointer + 1),
+                1,
+            )),
             99 => Self::Halt,
             _ => panic!("reached non valid instruction: {}", instruction),
         }
@@ -89,8 +100,7 @@ impl OpCode {
 
         if instruction > val && (instruction % reducer) / val == 1 {
             return OpCodeArgument::Immediate(arg);
-        }
-        else if instruction > val && (instruction % reducer) / val == 2 {
+        } else if instruction > val && (instruction % reducer) / val == 2 {
             return OpCodeArgument::Relative(arg);
         }
 
@@ -101,7 +111,7 @@ impl OpCode {
 #[derive(PartialEq, PartialOrd)]
 pub enum IoMode {
     Console,
-    Channels
+    Channels,
 }
 
 pub struct VM {
@@ -112,7 +122,7 @@ pub struct VM {
     input_sender: Sender<i64>,
     input: Receiver<i64>,
     output: Sender<i64>,
-    output_receiver: Option<Receiver<i64>>
+    output_receiver: Option<Receiver<i64>>,
 }
 
 impl VM {
@@ -127,7 +137,7 @@ impl VM {
             input_sender: tx,
             input: rx,
             output: tx2,
-            output_receiver: Some(rx2) 
+            output_receiver: Some(rx2),
         }
     }
 
@@ -136,7 +146,10 @@ impl VM {
             panic!("already in Channel IoMode!");
         }
         self.io_mode = IoMode::Channels;
-        (self.input_sender.clone(), self.output_receiver.take().unwrap())
+        (
+            self.input_sender.clone(),
+            self.output_receiver.take().unwrap(),
+        )
     }
 
     pub fn reset(&mut self) {
@@ -156,35 +169,33 @@ impl VM {
                 OpCode::Multiplication(arg1, arg2, result) => {
                     let mul_result = self.memory.get(arg1) * self.memory.get(arg2);
                     self.memory.set(result, mul_result);
-                },
+                }
 
                 // CMP
                 OpCode::JumpIfTrue(arg1, arg2) => {
                     if self.memory.get(arg1) != 0 {
                         self.instruction_pointer = self.memory.get(arg2) as usize;
                     }
-                },
+                }
                 OpCode::JumpIfFalse(arg1, arg2) => {
                     if self.memory.get(arg1) == 0 {
                         self.instruction_pointer = self.memory.get(arg2) as usize;
                     }
-                },
+                }
                 OpCode::LessThan(arg1, arg2, result) => {
                     if self.memory.get(arg1) < self.memory.get(arg2) {
                         self.memory.set(result, 1);
-                    }
-                    else {
+                    } else {
                         self.memory.set(result, 0);
                     }
-                },
+                }
                 OpCode::Equals(arg1, arg2, result) => {
                     if self.memory.get(arg1) == self.memory.get(arg2) {
                         self.memory.set(result, 1);
-                    }
-                    else {
+                    } else {
                         self.memory.set(result, 0);
                     }
-                },
+                }
 
                 // OTHER
                 OpCode::RelativeBase(arg) => {
@@ -204,17 +215,14 @@ impl VM {
         &self.memory
     }
 
-
     fn get_instruction(&mut self) -> OpCode {
-        let instruction =
-            OpCode::get_instruction(&self.memory, self.instruction_pointer);
+        let instruction = OpCode::get_instruction(&self.memory, self.instruction_pointer);
         self.instruction_pointer += instruction.size();
 
         instruction
     }
 
     fn input(&mut self, arg: OpCodeArgument) {
-
         let value = match self.io_mode {
             IoMode::Console => {
                 {
@@ -223,13 +231,11 @@ impl VM {
                     write!(out, "input: ").unwrap();
                     out.flush().unwrap();
                 }
-        
+
                 let line = std::io::stdin().lines().next().unwrap().unwrap();
                 line.parse().unwrap()
             }
-            IoMode::Channels => {
-                self.input.recv().unwrap()
-            }
+            IoMode::Channels => self.input.recv().unwrap(),
         };
 
         self.memory.set(arg, value);
@@ -244,12 +250,11 @@ impl VM {
                 let mut out = std::io::stdout().lock();
                 writeln!(out, "{}", val).unwrap();
                 out.flush().unwrap();
-            },
+            }
             IoMode::Channels => self.output.send(val).unwrap(),
         }
     }
 }
-
 
 pub fn last(recv: &Receiver<i64>) -> i64 {
     let mut result = 0;

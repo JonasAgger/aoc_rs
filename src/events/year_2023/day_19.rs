@@ -1,7 +1,7 @@
-use std::collections::HashMap;
+use std::{collections::{HashMap, VecDeque}, fmt::Debug};
 
 use anyhow::Result;
-
+use itertools::Itertools;
 
 use crate::utils::*;
 
@@ -35,8 +35,36 @@ impl AocDay for Day {
         Ok(total.into())
     }
 
-    fn run_part2(&mut self, _input: &[String]) -> Result<AoCResult> {
-        Ok(AoCResult::None)
+    fn run_part2(&mut self, input: &[String]) -> Result<AoCResult> {
+        let input = slice_utils::split_chunk_empty(input);
+        
+        let workflows: HashMap<_, _> = input[0]
+            .iter()
+            .map(|line| Workflow::parse(line.as_str()))
+            .map(|wf| (wf.name.clone(), wf))
+            .collect();
+
+        let mut accepted_paths_counts = 0;
+
+        for path in find_paths(&workflows) {
+            let mut min_max: Vec<Vec<_>> = (0..4).map(|_| vec![1, 4000]).collect();
+        
+            for cond in path {
+                match cond {
+                    Condition::None => continue,
+                    Condition::Greater(ix, val) => min_max[ix][0] = min_max[ix][0].max(val+1),
+                    Condition::Less(ix, val) => min_max[ix][1] = min_max[ix][1].min(val-1),
+                }
+            }
+
+            if min_max[0][0] > min_max[0][1] || min_max[1][0] > min_max[1][1] || min_max[2][0] > min_max[2][1] || min_max[3][0] > min_max[3][1] {
+                continue;
+            }
+            let t = (min_max[0][1] - min_max[0][0] + 1) * (min_max[1][1] - min_max[1][0] + 1) * (min_max[2][1] - min_max[2][0] + 1) * (min_max[3][1] - min_max[3][0] + 1);
+            accepted_paths_counts += t;
+        }
+
+        Ok(accepted_paths_counts.into())
     }
 }
 
@@ -54,6 +82,40 @@ fn get_value(workflows: &HashMap<String, Workflow>, item: &[usize]) -> usize {
     }
 }
 
+fn find_paths(workflows: &HashMap<String, Workflow>) -> Vec<Vec<Condition>> {
+    let mut accepted_paths: Vec<Vec<Condition>> = vec![];
+
+    let mut queue = VecDeque::new();
+    queue.push_back((RuleDestination::Workflow("in".into()), vec![]));
+
+    while let Some((dest, constraints)) = queue.pop_front() {
+        match dest {
+            RuleDestination::Workflow(next) => {
+                let mut inverted_constraints = constraints.clone();
+
+                for rule in workflows.get(&next).unwrap().rules.iter() {
+                    
+                    match &rule.condition {
+                        Condition::None => queue.push_back((rule.destination.clone(), inverted_constraints.clone())),
+                        cond => {
+                            let mut constraints = inverted_constraints.clone();
+                            constraints.push(cond.clone());
+                            queue.push_back((rule.destination.clone(), constraints));
+
+                            inverted_constraints.push(cond.invert())
+                        }
+                    }
+                }
+
+            },
+            RuleDestination::Accepted => accepted_paths.push(constraints),
+            RuleDestination::Rejected => continue,
+        }
+    }
+
+    accepted_paths
+}
+
 #[derive(Debug, Clone, PartialEq, PartialOrd)]
 enum RuleDestination {
     Workflow(String),
@@ -61,11 +123,50 @@ enum RuleDestination {
     Rejected,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 enum Condition {
     None,
     Greater(usize, usize),
     Less(usize, usize),
+}
+
+impl Debug for Condition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        
+        let index_name = match self {
+            Condition::None => '-',
+            Condition::Greater(ix, _) => match *ix {
+                0 => 'x',
+                1 => 'm',
+                2 => 'a',
+                3 => 's',
+                _ => unreachable!()
+            },
+            Condition::Less(ix, _) => match *ix {
+                0 => 'x',
+                1 => 'm',
+                2 => 'a',
+                3 => 's',
+                _ => unreachable!()
+            },
+        };
+        
+        match self {
+            Self::None => write!(f, "None"),
+            Self::Greater(arg0, arg1) => f.debug_tuple("Greater").field(&index_name).field(arg1).finish(),
+            Self::Less(arg0, arg1) => f.debug_tuple("Less").field(&index_name).field(arg1).finish(),
+        }
+    }
+}
+
+impl Condition {
+    fn invert(&self) -> Self {
+        match *self {
+            Condition::None => Condition::None,
+            Condition::Greater(ix, val) => Condition::Less(ix, val+1),
+            Condition::Less(ix, val) => Condition::Greater(ix, val-1),
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -163,6 +264,10 @@ impl Workflow {
             .next()
             .unwrap()
     }
+
+    fn into_rules(self) -> Vec<Rule> {
+        self.rules
+    }
 }
 // {x=787,m=2655,a=1222,s=2876}
 
@@ -244,5 +349,18 @@ mod test {
         let value = get_value(&workflows, &item);
 
         assert_eq!(value, 0)
+    }
+
+    #[test]
+    fn test_p2_paths() {
+        let mut workflows = HashMap::new();
+        
+        workflows.insert("in".into(), Workflow::parse("in{s<1351:px,qqz}"));
+        workflows.insert("px".into(), Workflow::parse("px{a<2006:qqz,A}"));
+        workflows.insert("qqz".into(), Workflow::parse("qqz{s>2770:R,m<1801:R,A}"));
+
+        let value = find_paths(&workflows);
+        dbg!(&value);
+        assert_eq!(value.len(), 3)
     }
 }

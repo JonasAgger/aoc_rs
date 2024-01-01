@@ -2,19 +2,18 @@ use std::collections::HashMap;
 
 use super::OpCodeArgument;
 
-
 pub struct Memory {
     instructions: Vec<i64>,
-    relative_base: i64, 
-    extended_memory: HashMap<usize, i64>
+    relative_base: i64,
+    extended_memory: HashMap<usize, i64>,
 }
 
 impl Memory {
     pub fn new(instructions: Vec<i64>) -> Self {
-        Self { 
-            instructions, 
+        Self {
+            instructions,
             relative_base: 0,
-            extended_memory: HashMap::new()
+            extended_memory: HashMap::new(),
         }
     }
 
@@ -31,8 +30,7 @@ impl Memory {
     pub fn set_value(&mut self, address: usize, value: i64) {
         if address >= self.instructions.len() {
             self.extended_memory.insert(address, value);
-        }
-        else {
+        } else {
             self.instructions[address] = value;
         }
     }

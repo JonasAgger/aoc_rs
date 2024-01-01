@@ -7,7 +7,7 @@ use crate::utils::{grid::Grid2D, *};
 
 use super::super::AocDay;
 
-#[derive(Debug, PartialEq, PartialOrd)]
+#[derive(Debug, Clone, PartialEq, PartialOrd)]
 enum RowCol {
     Row(usize),
     Col(usize),
@@ -58,6 +58,7 @@ impl AocDay for Day {
         for grid in grids {
             debug!("{}", &grid);
             let refection = find_reflection(&grid, matches_part1);
+
             result += match refection {
                 RowCol::Row(val) => val * 100,
                 RowCol::Col(val) => val,

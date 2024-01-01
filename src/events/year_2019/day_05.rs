@@ -1,13 +1,10 @@
 use anyhow::Result;
 
+use super::super::AocDay;
 use crate::utils::*;
 use crate::vm::VM;
-use super::super::AocDay;
 
-
-pub struct Day {
-
-}
+pub struct Day {}
 
 impl Day {
     pub fn new() -> Self {
@@ -30,7 +27,7 @@ impl AocDay for Day {
             result = val;
         }
 
-        Ok(result.into())    
+        Ok(result.into())
     }
 
     fn run_part2(&mut self, input: &[String]) -> Result<AoCResult> {
@@ -43,7 +40,7 @@ impl AocDay for Day {
         vm.execute();
 
         let val = rx.recv().unwrap();
-        Ok(val.into())        
+        Ok(val.into())
     }
 }
 
@@ -52,20 +49,23 @@ mod test {
 
     use std::mem;
 
-    use crate::vm::{OpCode, OpCodeArgument, memory::Memory};
+    use crate::vm::{memory::Memory, OpCode, OpCodeArgument};
 
     use super::*;
 
     #[test]
     fn testcase1() {
-        let input: Vec<i64> = vec![1102,45,16,225];
+        let input: Vec<i64> = vec![1102, 45, 16, 225];
         let memory = Memory::new(input);
         let instruction = OpCode::get_instruction(&memory, 0);
 
-        assert_eq!(instruction, OpCode::Multiplication(
-            OpCodeArgument::Immediate(45), 
-            OpCodeArgument::Immediate(16), 
-            OpCodeArgument::Position(225)
-        ))
+        assert_eq!(
+            instruction,
+            OpCode::Multiplication(
+                OpCodeArgument::Immediate(45),
+                OpCodeArgument::Immediate(16),
+                OpCodeArgument::Position(225)
+            )
+        )
     }
 }

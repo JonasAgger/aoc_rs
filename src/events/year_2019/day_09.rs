@@ -4,10 +4,7 @@ use crate::{utils::*, vm::VM};
 
 use super::super::AocDay;
 
-
-pub struct Day {
-
-}
+pub struct Day {}
 
 impl Day {
     pub fn new() -> Self {
@@ -30,7 +27,7 @@ impl AocDay for Day {
             result = val;
         }
 
-        Ok(result.into())   
+        Ok(result.into())
     }
 
     fn run_part2(&mut self, input: &[String]) -> Result<AoCResult> {
@@ -47,5 +44,6 @@ impl AocDay for Day {
             result = val;
         }
 
-        Ok(result.into())       }
+        Ok(result.into())
+    }
 }
