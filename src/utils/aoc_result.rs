@@ -45,9 +45,21 @@ impl From<i64> for AoCResult {
     }
 }
 
+impl From<i32> for AoCResult {
+    fn from(val: i32) -> Self {
+        AoCResult::Int(val.into())
+    }
+}
+
 impl From<u64> for AoCResult {
     fn from(val: u64) -> Self {
         AoCResult::UInt(val)
+    }
+}
+
+impl From<u32> for AoCResult {
+    fn from(val: u32) -> Self {
+        AoCResult::UInt(val.into())
     }
 }
 

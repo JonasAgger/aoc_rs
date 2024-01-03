@@ -100,7 +100,9 @@ impl InputFetcher {
             (Some(mut start), Some(end)) => {
                 start += "<pre><code>".len();
 
-                return text[start..end].lines().map(|s| s.into()).collect();
+                // Testing to check if we need to decode html formatted input. Might be needed in somce cases?
+                return text[start..end].lines().map(|s: &str| html_escape::decode_html_entities(s).into_owned()).collect();
+                // return text[start..end].lines().map(|s| s.into()).collect(); 
             }
             _ => vec![],
         }
