@@ -1,5 +1,7 @@
 use std::{io::Write, path::PathBuf};
 
+use tracing::{debug, trace};
+
 pub mod bench;
 pub mod run;
 
@@ -36,12 +38,17 @@ impl InputFetcher {
             (false, None) => format!("{}/{:02}.txt", year, day),
         });
 
+        debug!("Feting input from {:?}", data_path);
         match (
             std::fs::read_to_string(&data_path),
             specific_input.is_some(),
         ) {
-            (Ok(input), _) => input.lines().map(|s| s.trim().into()).collect(),
+            (Ok(input), _) => {
+                trace!("Found file cahce. Fetching from file");
+                input.lines().map(|s| s.trim().into()).collect()
+            }
             (Err(_), false) => {
+                trace!("Did not find file cahce. Fetching from source");
                 let input = match test {
                     true => self.fetch_input_test(day, year),
                     false => self.fetch_input(day, year),
@@ -65,6 +72,7 @@ impl InputFetcher {
     fn fetch_input(&mut self, day: u8, year: u16) -> Vec<String> {
         let path = format!("/{year}/day/{day}/input");
 
+        debug!("Fetching input from path: '{}'", path);
         let client = reqwest::blocking::Client::new();
 
         let resp = client
@@ -82,6 +90,7 @@ impl InputFetcher {
 
     fn fetch_input_test(&mut self, day: u8, year: u16) -> Vec<String> {
         let path = format!("/{year}/day/{day}");
+        debug!("Fetching test input from path: '{}'", path);
 
         let client = reqwest::blocking::Client::new();
 
@@ -101,8 +110,11 @@ impl InputFetcher {
                 start += "<pre><code>".len();
 
                 // Testing to check if we need to decode html formatted input. Might be needed in somce cases?
-                return text[start..end].lines().map(|s: &str| html_escape::decode_html_entities(s).into_owned()).collect();
-                // return text[start..end].lines().map(|s| s.into()).collect(); 
+                return text[start..end]
+                    .lines()
+                    .map(|s: &str| html_escape::decode_html_entities(s).into_owned())
+                    .collect();
+                // return text[start..end].lines().map(|s| s.into()).collect();
             }
             _ => vec![],
         }

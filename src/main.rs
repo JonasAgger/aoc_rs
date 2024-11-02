@@ -1,6 +1,6 @@
-#![feature(slice_group_by)]
 #![feature(let_chains)]
 #![feature(iter_map_windows)]
+#![feature(pattern)]
 #![allow(dead_code)]
 
 mod commands;

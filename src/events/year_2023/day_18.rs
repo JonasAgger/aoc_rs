@@ -1,4 +1,3 @@
-use core::panic;
 use std::collections::{HashSet, VecDeque};
 
 use anyhow::Result;
@@ -188,7 +187,7 @@ fn fill(points: &[IPoint]) -> usize {
 
     while let Some(p) = flood_fill.pop_front() {
         *grid.get_mut(p).unwrap() = '#';
-        let neighbours = Utils::get_neighbours_grid_cmp(p, &grid, |&c| c == '.');
+        let neighbours = get_neighbours_grid_cmp(p, &grid, |&c| c == '.');
         // dbg!(&neighbours);
         for n in neighbours {
             if visited.insert(n) {

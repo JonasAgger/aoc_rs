@@ -36,7 +36,7 @@ impl AocDay for Day {
                     is_parsing = false;
                     let mut x_range = start_parse_index..x_index;
                     if x_range.any(|x| {
-                        Utils::has_cmp_neighbour((x, y_index), &lines, |c| {
+                        has_cmp_neighbour((x, y_index), &lines, |c| {
                             c.is_ascii_punctuation() && !c.eq(&'.')
                         })
                     }) {
@@ -50,7 +50,7 @@ impl AocDay for Day {
                 is_parsing = false;
                 let mut x_range = start_parse_index..lines[0].len();
                 if x_range.any(|x| {
-                    Utils::has_cmp_neighbour((x, y_index), &lines, |c| {
+                    has_cmp_neighbour((x, y_index), &lines, |c| {
                         c.is_ascii_punctuation() && !c.eq(&'.')
                     })
                 }) {
@@ -73,7 +73,7 @@ impl AocDay for Day {
             for (x_index, char) in chars.iter().enumerate() {
                 if char.eq(&'*') {
                     let neighbours =
-                        Utils::get_neighbours_cmp(Point::new(x_index, y_index), &lines, |c| {
+                        get_neighbours_cmp(Point::new(x_index, y_index), &lines, |c| {
                             c.is_ascii_digit()
                         });
 

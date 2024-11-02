@@ -113,7 +113,7 @@ fn neighbors<const MIN: usize, const MAX: usize>(node: &Node, grid: &Grid2D<u32>
     let mut neighbors = Vec::new();
     // Get the possible next valid points.
 
-    for point in Utils::get_neighbours_straight(node.position, &grid) {
+    for point in get_neighbours_straight(node.position, &grid) {
         let direction = Direction::from_vec2d(&point.get_diff(node.position));
 
         // Cant go straight back

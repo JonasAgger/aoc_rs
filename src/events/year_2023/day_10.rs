@@ -134,7 +134,7 @@ fn get_pipe_path(start: &Point, grid: &Grid2D<Pipe>) -> Vec<Point> {
 
     // lets get all neighbours that are not ground
     let connecting_neighbours =
-        Utils::get_neighbours_grid_cmp(start, grid, |p| !matches!(p, &Pipe::Ground));
+        get_neighbours_grid_cmp(start, grid, |p| !matches!(p, &Pipe::Ground));
     let neighbouring_pipes: Vec<_> = connecting_neighbours
         .iter()
         .map(|&p| grid.get(p).unwrap())
