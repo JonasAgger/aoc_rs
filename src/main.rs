@@ -61,8 +61,16 @@ enum AoCCommands {
     BenchAll,
 }
 
+pub static mut TEST: bool = false;
+
 fn main() -> Result<()> {
     let cli = AoCOptions::parse();
+
+    if cli.test {
+        unsafe {
+            TEST = true;
+        }
+    }
 
     let subscriber = FmtSubscriber::builder()
         .with_max_level(match (&cli.verbose, &cli.trace) {

@@ -3,6 +3,7 @@ pub mod grid;
 pub mod math_utils;
 pub mod point;
 pub mod slice_utils;
+pub mod variable;
 pub mod vec2d;
 
 use std::{

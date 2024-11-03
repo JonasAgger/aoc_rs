@@ -50,7 +50,7 @@ impl<T: Clone + Display> Grid2D<T> {
 
         for row in 0..rows {
             for col in 0..row_width {
-                backing_vec[row * row_width + col] = factory(col, row);
+                backing_vec.push(factory(col, row));
             }
         }
 
