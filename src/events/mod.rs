@@ -1,6 +1,7 @@
 mod year_2018;
 mod year_2019;
 mod year_2023;
+mod year_2024;
 
 
 use anyhow::Result;
@@ -44,6 +45,7 @@ pub fn get_day(day: u8, year: u16) -> Result<Box<dyn AocDay>> {
 (18, 2023) => Ok(Box::new(year_2023::day_18::Day::new())),
 (19, 2023) => Ok(Box::new(year_2023::day_19::Day::new())),
 (20, 2023) => Ok(Box::new(year_2023::day_20::Day::new())),
+(1, 2024) => Ok(Box::new(year_2024::day_01::Day::new())),
 
         _ => anyhow::bail!("Received invalid day: {}", day) 
     }
