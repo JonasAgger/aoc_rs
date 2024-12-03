@@ -46,6 +46,8 @@ pub fn get_day(day: u8, year: u16) -> Result<Box<dyn AocDay>> {
 (19, 2023) => Ok(Box::new(year_2023::day_19::Day::new())),
 (20, 2023) => Ok(Box::new(year_2023::day_20::Day::new())),
 (1, 2024) => Ok(Box::new(year_2024::day_01::Day::new())),
+(2, 2024) => Ok(Box::new(year_2024::day_02::Day::new())),
+(3, 2024) => Ok(Box::new(year_2024::day_03::Day::new())),
 
         _ => anyhow::bail!("Received invalid day: {}", day) 
     }

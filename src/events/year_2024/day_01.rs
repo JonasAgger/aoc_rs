@@ -39,7 +39,7 @@ impl AocDay for Day {
     }
 
     fn run_part2(&mut self, input: &[String]) -> Result<AoCResult> {
-        let (mut l1, mut l2): (Vec<i64>, Vec<i64>) = input
+        let (l1, mut l2): (Vec<i64>, Vec<i64>) = input
             .into_iter()
             .map(|x| {
                 let mut x = x.split_ascii_whitespace();

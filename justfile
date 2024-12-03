@@ -22,19 +22,19 @@ build: clear
     cargo build
 
 run DAY="": clear
-    cargo run -- run -y 2018 {{DAY}}
+    cargo +nightly run -- run {{DAY}}
 
 run-release DAY="": clear
-    cargo run --release -- run -y 2018 {{DAY}}
+    cargo +nightly run --release -- run {{DAY}}
 
 run-test DAY="": clear 
-    cargo run -- run -y 2018 --test {{DAY}}
+    cargo +nightly run -- run --test {{DAY}}
 
 create DAY="": clear
-    cargo run -- create -y 2018 {{DAY}}
+    cargo +nightly run -- create {{DAY}}
 
 bench DAY="": clear
-    cargo run -- bench -y 2018 {{DAY}}
+    cargo +nightly run -- bench {{DAY}}
 
 bench-release DAY="": clear
-    cargo run --release -- bench -y 2018 {{DAY}}
+    cargo +nightly run --release -- bench {{DAY}}
