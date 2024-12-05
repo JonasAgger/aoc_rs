@@ -1,7 +1,6 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 use anyhow::Result;
-use itertools::Itertools;
 
 use crate::utils::{self, *};
 
@@ -76,8 +75,7 @@ impl AocDay for Day {
 
         let mut sum = 0;
 
-        let len = pages.len();
-        for (idx, page) in pages.into_iter().enumerate() {
+        for page in pages {
             if is_valid(&page, &page_ordering) {
                 continue;
             }
