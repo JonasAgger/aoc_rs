@@ -4,6 +4,7 @@ set windows-shell := ["powershell.exe", "-c"]
 alias r := run
 alias c := create
 alias b := bench
+alias tt := test
 alias rr := run-release
 alias br := bench-release
 alias rt := run-test
@@ -38,3 +39,6 @@ bench DAY="": clear
 
 bench-release DAY="": clear
     cargo +nightly run --release -- bench {{DAY}}
+
+test DAY="": clear
+    cargo +nightly test
