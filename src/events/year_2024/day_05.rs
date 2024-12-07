@@ -156,7 +156,6 @@ mod tests {
         // 29|13
         let page = vec![61, 13, 29];
         let page = make_correct_ordering(page, &page_ordering);
-        dbg!(&page);
-        assert!(!is_valid(&page, &page_ordering))
+        assert!(is_valid(&page, &page_ordering))
     }
 }
