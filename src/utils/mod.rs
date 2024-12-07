@@ -18,6 +18,7 @@ use self::grid::Grid2D;
 
 pub trait StrNumber {
     fn number<T: FromStr<Err = U>, U: Debug>(&self) -> T;
+    fn number_or<T: FromStr<Err = U>, U: Debug>(&self, default: T) -> T;
     fn number_in_prefixed<T: FromStr<Err = U>, U: Debug>(&self, prefix: &str) -> T;
 }
 
@@ -39,6 +40,16 @@ impl<S: AsRef<str>> StrNumber for S {
             .take_while(char::is_ascii_digit)
             .collect();
         c1.parse().expect("cannot get number with prefix")
+    }
+
+    fn number_or<T: FromStr<Err = U>, U: Debug>(&self, default: T) -> T {
+        let s = self.as_ref();
+        let c1: String = s
+            .chars()
+            .skip_while(|c| !char::is_ascii_digit(c))
+            .take_while(char::is_ascii_digit)
+            .collect();
+        c1.parse().unwrap_or(default)
     }
 }
 
