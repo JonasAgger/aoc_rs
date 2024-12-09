@@ -41,4 +41,4 @@ bench-release DAY="": clear
     cargo +nightly run --release -- bench {{DAY}}
 
 test DAY="": clear
-    cargo +nightly test --no-capture
+    cargo +nightly test -- --show-output
