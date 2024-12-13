@@ -122,6 +122,18 @@ impl Debug for Point {
     }
 }
 
+impl Display for IPoint {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "(x:{}, y:{})", self.x, self.y)
+    }
+}
+
+impl Debug for IPoint {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self)
+    }
+}
+
 impl From<Point> for (usize, usize) {
     fn from(e: Point) -> (usize, usize) {
         let Point { x, y } = e;
