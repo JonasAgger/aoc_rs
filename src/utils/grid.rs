@@ -144,11 +144,6 @@ impl<T: Clone + Display> Grid2D<T> {
         if self.is_within_bounds(src) && self.is_within_bounds(dest) {
             let src_index = src.y() * self.row_width + src.x();
             let dest_index = dest.y() * self.row_width + dest.x();
-            // println!(
-            //     "SWAP: {}:{} -> {}:{}",
-            //     src, self.backing_vec[src_index], dest, self.backing_vec[dest_index]
-            // );
-            // println!("{}", self);
             self.backing_vec.swap(src_index, dest_index);
         } else {
             panic!("Tried to swap invalid indicies {} -- {}", src, dest);

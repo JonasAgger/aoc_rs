@@ -1,4 +1,4 @@
-use std::fmt::Display;
+use std::{collections::HashSet, fmt::Display};
 
 use anyhow::Result;
 use vec2d::Vec2D;
@@ -31,9 +31,10 @@ impl AocDay for Day {
             .collect();
 
         let mut player_position = grid.find(|&s| s == GridElement::Player).unwrap();
-
         for movement in movements {
-            if moved(&mut grid, player_position, movement) {
+            let mut moves = vec![];
+            if moved(&grid, player_position, movement, &mut moves) {
+                apply(&mut grid, &moves);
                 player_position = player_position + movement;
             }
         }
@@ -63,13 +64,12 @@ impl AocDay for Day {
         let mut player_position = grid.find(|&s| s == GridElement::Player).unwrap();
 
         for movement in movements {
-            println!("{}", grid);
-            if moved(&mut grid, player_position, movement) {
+            let mut moves = vec![];
+            if moved(&grid, player_position, movement, &mut moves) {
+                apply(&mut grid, &moves);
                 player_position = player_position + movement;
             }
         }
-
-        println!("{}", grid);
 
         let sum: usize = grid
             .find_all(|&s| s == GridElement::BoxP2L)
@@ -81,7 +81,7 @@ impl AocDay for Day {
 }
 
 fn moved(
-    grid: &mut grid::Grid2D<GridElement>,
+    grid: &grid::Grid2D<GridElement>,
     position: Point,
     movement: Vec2D,
     moves: &mut Vec<Move>,
@@ -91,29 +91,52 @@ fn moved(
     let moved = match grid.get(destination) {
         Some(&destination_element) => match destination_element {
             GridElement::Wall => false,
-            GridElement::Box => moved(grid, destination, movement),
+            GridElement::Box => moved(grid, destination, movement, moves),
             GridElement::Player => panic!("Went into player?"),
             GridElement::Empty => true,
             // p2
             GridElement::BoxP2L => {
-                moved(grid, destination + Vec2D::RIGHT, movement, moves)
-                    && moved(grid, destination, movement)
+                //  dont fan out if we're moving boxex straight up
+                let origin = *grid.get(position).unwrap();
+                if movement.y() != 0 && origin != GridElement::BoxP2L {
+                    moved(grid, destination + Vec2D::RIGHT, movement, moves)
+                        && moved(grid, destination, movement, moves)
+                } else {
+                    moved(grid, destination, movement, moves)
+                }
             }
             GridElement::BoxP2R => {
-                moved(grid, destination + Vec2D::LEFT, movement)
-                    && moved(grid, destination, movement)
+                //  dont fan out if we're moving boxex straight up
+                let origin = *grid.get(position).unwrap();
+                if movement.y() != 0 && origin != GridElement::BoxP2R {
+                    moved(grid, destination + Vec2D::LEFT, movement, moves)
+                        && moved(grid, destination, movement, moves)
+                } else {
+                    moved(grid, destination, movement, moves)
+                }
             }
         },
         None => panic!("Went OOB"),
     };
 
     if moved {
-        grid.swap(position, destination);
+        moves.push(Move {
+            src: position,
+            dest: destination,
+        });
     }
 
     moved
 }
 
+fn apply(grid: &mut grid::Grid2D<GridElement>, moves: &[Move]) {
+    let mut filter = HashSet::new(); // Dont apply double moves
+    for Move { src, dest } in moves.into_iter().filter(|&m| filter.insert(m.clone())) {
+        grid.swap(*src, *dest);
+    }
+}
+
+#[derive(Debug, Hash, Clone, PartialEq, Eq)]
 struct Move {
     src: Point,
     dest: Point,
@@ -191,4 +214,93 @@ fn to_vector(c: u8) -> Vec2D {
 ########
 
 <^^>>>vv<v>>v<<
+*/
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn move_up_p2() {
+        let s = r"
+########
+#......#
+#......#
+#...O..#
+#.#.O..#
+#...@O.#
+#...O..#
+########";
+        let lines: Vec<String> = s.lines().into_iter().map(|s| s.to_owned()).collect();
+
+        let mut grid = grid::Grid2D::parse(&lines, GridElement::parse2);
+
+        let player_position = grid.find(|&s| s == GridElement::Player).unwrap();
+
+        let mut moves = vec![];
+        let did_move = moved(&grid, player_position, Vec2D::UP, &mut moves);
+
+        assert!(did_move);
+
+        apply(&mut grid, &moves);
+        println!("{grid}");
+        assert_eq!(
+            grid.to_string(),
+            r"
+################
+##............##
+##......[]....##
+##......[]....##
+##..##..@.....##
+##........[]..##
+##......[]....##
+################
+"
+        );
+    }
+
+    #[test]
+    fn move_up_p2_2() {
+        let rows = vec![
+            pp(".....[]."),
+            pp("...[].##"),
+            pp("..[][].."),
+            pp("..[][].."),
+            pp("...[][]."),
+            pp("[][]@..."),
+        ];
+        let mut grid = grid::Grid2D::build(8, 6, |col, row| rows[row][col]);
+
+        let player_position = grid.find(|&s| s == GridElement::Player).unwrap();
+
+        let mut moves = vec![];
+        let did_move = moved(&grid, player_position, Vec2D::UP, &mut moves);
+
+        assert!(did_move);
+
+        apply(&mut grid, &moves);
+    }
+
+    fn pp(s: &str) -> Vec<GridElement> {
+        s.as_bytes()
+            .iter()
+            .map(|&b| match b {
+                b'.' => GridElement::Empty,
+                b'#' => GridElement::Wall,
+                b'[' => GridElement::BoxP2L,
+                b']' => GridElement::BoxP2R,
+                b'@' => GridElement::Player,
+                _ => unreachable!(),
+            })
+            .collect()
+    }
+}
+
+/*
+####[]..........##[]..........[]........[]...[].[].........[]......[].[].....[][].............[]..##
+##............##..[]##..[]......##........[][]..[]##[]........####[]..##...[].##....[][]##........##
+##[][][]......[]....[][]..................[]..##....[]......[]##......[]..[][]......[]##[]......[]##
+##......[][]....[]....[]##......[]....[]..##[]......[]##..................[][]......[]........[]..##
+##[][]..[]..[][]....[][]..##........[]........[][][]........[][]......[]...[][].....[]..[]......[]##
+##....[]..[]..[]......[][]..##....[][]....##[].............[].##......[][][]@...[]......[]##[][]..##
 */
