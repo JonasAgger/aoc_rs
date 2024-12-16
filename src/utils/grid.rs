@@ -137,6 +137,23 @@ impl<T: Clone + Display> Grid2D<T> {
     pub fn get_col(&self, col: usize) -> impl IntoIterator<Item = &T> {
         self.backing_vec[col..].iter().step_by(self.row_width)
     }
+
+    pub fn swap<P: Into<Point>>(&mut self, src: P, dest: P) {
+        let src = src.into();
+        let dest = dest.into();
+        if self.is_within_bounds(src) && self.is_within_bounds(dest) {
+            let src_index = src.y() * self.row_width + src.x();
+            let dest_index = dest.y() * self.row_width + dest.x();
+            // println!(
+            //     "SWAP: {}:{} -> {}:{}",
+            //     src, self.backing_vec[src_index], dest, self.backing_vec[dest_index]
+            // );
+            // println!("{}", self);
+            self.backing_vec.swap(src_index, dest_index);
+        } else {
+            panic!("Tried to swap invalid indicies {} -- {}", src, dest);
+        }
+    }
 }
 
 impl<T: Clone + Display + std::hash::Hash> Grid2D<T> {

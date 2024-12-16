@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Eq, Ord, Hash)]
 pub struct Vec2D {
     x: i64,
@@ -5,15 +7,20 @@ pub struct Vec2D {
 }
 
 impl Vec2D {
-    pub fn new(x: i64, y: i64) -> Self {
+    pub const UP: Vec2D = Vec2D::new(0, -1);
+    pub const DOWN: Vec2D = Vec2D::new(0, 1);
+    pub const LEFT: Vec2D = Vec2D::new(-1, 0);
+    pub const RIGHT: Vec2D = Vec2D::new(1, 0);
+
+    pub const fn new(x: i64, y: i64) -> Self {
         Self { x, y }
     }
 
-    pub fn x(&self) -> i64 {
+    pub const fn x(&self) -> i64 {
         self.x
     }
 
-    pub fn y(&self) -> i64 {
+    pub const fn y(&self) -> i64 {
         self.y
     }
 
@@ -31,5 +38,11 @@ impl From<(i64, i64)> for Vec2D {
 impl From<&(i64, i64)> for Vec2D {
     fn from(e: &(i64, i64)) -> Vec2D {
         Vec2D::new(e.0, e.1)
+    }
+}
+
+impl Display for Vec2D {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "|{}, {}|", self.x, self.y)
     }
 }

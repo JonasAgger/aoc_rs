@@ -1,4 +1,7 @@
-use std::fmt::{Debug, Display};
+use std::{
+    fmt::{Debug, Display},
+    ops::Add,
+};
 
 use super::vec2d::Vec2D;
 
@@ -157,5 +160,31 @@ impl From<(usize, usize)> for Point {
 impl From<&(usize, usize)> for Point {
     fn from(e: &(usize, usize)) -> Point {
         Point::new(e.0, e.1)
+    }
+}
+
+impl Add<Vec2D> for Point {
+    type Output = Point;
+
+    fn add(mut self, rhs: Vec2D) -> Self::Output {
+        self = if rhs.x() < 0 {
+            self.sub_x(rhs.x().abs() as usize).unwrap()
+        } else {
+            self.add_x(rhs.x() as usize).unwrap()
+        };
+
+        if rhs.y() < 0 {
+            self.sub_y(rhs.y().abs() as usize).unwrap()
+        } else {
+            self.add_y(rhs.y() as usize).unwrap()
+        }
+    }
+}
+
+impl Add<Vec2D> for IPoint {
+    type Output = IPoint;
+
+    fn add(self, rhs: Vec2D) -> Self::Output {
+        self.add_x(rhs.x()).unwrap().add_y(rhs.y()).unwrap()
     }
 }
