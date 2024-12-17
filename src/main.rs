@@ -112,7 +112,7 @@ fn main() -> Result<()> {
             commands::bench::bench_day(day, year, input, cli.part)
         }
         AoCCommands::BenchAll => {
-            for day in 1..=day {
+            for day in (1..=day).filter(|&day| events::has_day(day, year)) {
                 let mut input_fetcher = InputFetcher::new(INPUT_FOLDER);
                 let input = input_fetcher.fetch(day, year, cli.test, &cli.input);
                 commands::bench::bench_day(day, year, input, cli.part)?;

@@ -53,11 +53,13 @@ pub trait Single<T> {
 impl<U: Iterator<Item = T>, T: Debug> Single<T> for U {
     fn single(mut self) -> T {
         let data = self.next().unwrap();
-
-        if self.next().is_none() {
+        let next = self.next();
+        if next.is_none() {
             data
         } else {
-            panic!("sequece did not contain a single element");
+            let mut data = vec![data, next.unwrap()];
+            data.extend(self);
+            panic!("sequece did not contain a single element: {:?}", data);
         }
     }
 }

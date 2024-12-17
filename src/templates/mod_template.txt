@@ -9,6 +9,10 @@ pub trait AocDay {
     fn run_part2(&mut self, input: &[String]) -> Result<AoCResult>; 
 }
 
+pub fn has_day(day: u8, year: u16) -> bool {
+    get_day(day, year).is_ok()
+}
+
 pub fn get_day(day: u8, year: u16) -> Result<Box<dyn AocDay>> {
     match (day, year) {
         $MATCH_DAYS$
