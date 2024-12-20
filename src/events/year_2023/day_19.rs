@@ -375,7 +375,7 @@ mod test {
         workflows.insert("qqz".into(), Workflow::parse("qqz{s>2770:R,m<1801:R,A}"));
 
         let value = find_paths(&workflows);
-        dbg!(&value);
+
         assert_eq!(value.len(), 3)
     }
 }

@@ -243,7 +243,7 @@ mod tests {
         assert!(did_move);
 
         apply(&mut grid, &moves);
-        println!("{grid}");
+
         assert_eq!(
             grid.to_string(),
             r"

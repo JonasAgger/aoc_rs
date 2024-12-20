@@ -1,17 +1,17 @@
-use std::fmt::Debug;
+use std::{fmt::Debug, mem::MaybeUninit};
 
-pub fn split_chunk_empty(inputs: &[String]) -> Vec<Vec<String>> {
+pub fn split_chunk_empty(input: &[String]) -> Vec<Vec<String>> {
     let mut splits = vec![];
 
     let mut start = 0;
-    for i in 0..inputs.len() {
-        if inputs[i].is_empty() {
-            splits.push(inputs[start..i].to_vec());
+    for i in 0..input.len() {
+        if input[i].is_empty() {
+            splits.push(input[start..i].to_vec());
             start = i + 1;
         }
     }
 
-    splits.push(inputs[start..].to_vec());
+    splits.push(input[start..].to_vec());
 
     splits
 }
@@ -61,5 +61,24 @@ impl<U: Iterator<Item = T>, T: Debug> Single<T> for U {
             data.extend(self);
             panic!("sequece did not contain a single element: {:?}", data);
         }
+    }
+}
+
+pub trait MinMax<T> {
+    fn min_max(self) -> (T, T);
+}
+
+impl<U: Iterator<Item = T>, T: Ord + Clone> MinMax<T> for U {
+    fn min_max(mut self) -> (T, T) {
+        let first = self.next().unwrap();
+        let mut min = first.clone();
+        let mut max = first.clone();
+
+        while let Some(next) = self.next() {
+            min = min.min(next.clone());
+            max = max.max(next.clone());
+        }
+
+        (min, max)
     }
 }

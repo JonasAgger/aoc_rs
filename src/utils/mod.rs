@@ -13,6 +13,7 @@ use std::{
 
 pub use aoc_result::AoCResult;
 pub use point::Point;
+pub use slice_utils::*;
 
 use self::grid::Grid2D;
 
