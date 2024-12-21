@@ -44,4 +44,5 @@ bench-all: clear
     cargo +nightly run --release -- bench-all
 
 test DAY="": clear
-    cargo +nightly test -- --show-output --nocapture {{DAY}}
+    cargo +nightly test -- --show-output {{DAY}}
+    # cargo +nightly test -- --show-output --nocapture {{DAY}}
