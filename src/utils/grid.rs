@@ -69,6 +69,13 @@ impl<T: Clone + Display> Grid2D<T> {
         }
     }
 
+    pub fn from_raw(data: Vec<T>, row_width: usize) -> Self {
+        Self {
+            backing_vec: data,
+            row_width,
+        }
+    }
+
     pub fn width(&self) -> usize {
         self.row_width
     }
