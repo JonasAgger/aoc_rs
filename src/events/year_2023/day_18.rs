@@ -111,7 +111,7 @@ impl AocDay for Day {
 fn perimiter(points: &[IPoint]) -> i64 {
     points
         .iter()
-        .map_windows(|[&a, &b]| b.manhattan_distance(&a))
+        .map_windows(|[a, b]| b.manhattan_distance(&a))
         .sum()
 }
 
@@ -119,7 +119,7 @@ fn shoelace(points: &[IPoint]) -> i64 {
     // We can calculate the area by making a lot of triangles, and then just adding them up
     let sum: i64 = points
         .iter()
-        .map_windows(|[&a, &b]| a.x() * b.y() - b.x() * a.y())
+        .map_windows(|[a, b]| a.x() * b.y() - b.x() * a.y())
         .sum();
     sum.abs() / 2
 }

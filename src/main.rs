@@ -1,4 +1,3 @@
-#![feature(let_chains)]
 #![feature(iter_map_windows)]
 #![feature(pattern)]
 #![allow(dead_code)]
@@ -10,8 +9,9 @@ pub mod utils;
 pub mod vm;
 
 use anyhow::Result;
+use chrono::Datelike;
 use clap::{Parser, Subcommand, ValueEnum};
-use tracing::{debug, Level};
+use tracing::{Level, debug};
 use tracing_subscriber::FmtSubscriber;
 
 use crate::{commands::InputFetcher, day_generator::DayGenerator};
@@ -83,7 +83,7 @@ fn main() -> Result<()> {
 
     let day_generator = DayGenerator::new(String::from(DAYS_FOLDER));
 
-    let now = time::OffsetDateTime::now_utc();
+    let now = chrono::Utc::now();
 
     // Replace year and date
 

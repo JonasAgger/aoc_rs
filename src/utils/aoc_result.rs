@@ -7,6 +7,7 @@ pub enum AoCResult {
     Int(i64),
     UInt(u64),
     USize(usize),
+    ISize(isize),
     BigInt(i128),
     BigUInt(u128),
     Float(f64),
@@ -26,6 +27,7 @@ impl Display for AoCResult {
             AoCResult::Int(i) => write!(f, "{}", i),
             AoCResult::UInt(i) => write!(f, "{}", i),
             AoCResult::USize(i) => write!(f, "{}", i),
+            AoCResult::ISize(i) => write!(f, "{}", i),
             AoCResult::BigInt(i) => write!(f, "{}", i),
             AoCResult::BigUInt(i) => write!(f, "{}", i),
             AoCResult::Float(i) => write!(f, "{}", i),
@@ -72,6 +74,12 @@ impl From<u32> for AoCResult {
 impl From<usize> for AoCResult {
     fn from(val: usize) -> Self {
         AoCResult::USize(val)
+    }
+}
+
+impl From<isize> for AoCResult {
+    fn from(val: isize) -> Self {
+        AoCResult::ISize(val)
     }
 }
 

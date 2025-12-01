@@ -1,16 +1,13 @@
 use std::collections::{HashMap, VecDeque};
 
-use anyhow::{Result, Ok};
-use tracing::{info, debug};
+use anyhow::{Ok, Result};
+use tracing::{debug, info};
 
 use crate::utils::*;
 
 use super::super::AocDay;
 
-
-pub struct Day {
-
-}
+pub struct Day {}
 
 impl Day {
     pub fn new() -> Self {
@@ -20,8 +17,11 @@ impl Day {
 
 impl AocDay for Day {
     fn run_part1(&mut self, input: &[String]) -> Result<AoCResult> {
-
-        let mut modules: HashMap<_, _> = input.iter().map(|line| Module::parse(line)).map(|module| (module.name.clone(), module)).collect();
+        let mut modules: HashMap<_, _> = input
+            .iter()
+            .map(|line| Module::parse(line))
+            .map(|module| (module.name.clone(), module))
+            .collect();
         align_conjunctions(&mut modules);
 
         let mut low_counts = 0;
@@ -34,7 +34,6 @@ impl AocDay for Day {
             low_counts += low_count;
         }
 
-
         info!("{} -- {}", high_counts, low_counts);
 
         let result = high_counts * low_counts;
@@ -42,11 +41,15 @@ impl AocDay for Day {
     }
 
     fn run_part2(&mut self, input: &[String]) -> Result<AoCResult> {
-        let modules: HashMap<_, _> = input.iter().map(|line| Module::parse(line)).map(|module| (module.name.clone(), module)).collect();
-        
+        let modules: HashMap<_, _> = input
+            .iter()
+            .map(|line| Module::parse(line))
+            .map(|module| (module.name.clone(), module))
+            .collect();
+
         // This is actually just 4 binary counters, where each counter has a different cycle time.
         // Ergo we can use LCM to get when they all cycle at the same time.
-        
+
         let mut graph = VecDeque::new();
         let mut counter_cycles = vec![];
 
@@ -58,15 +61,16 @@ impl AocDay for Day {
             let dependends = &modules[name].destinations;
 
             // Find next flipflop child. Conjectures are just used as a reset button here. ergo 0000 -> 0001 -> 0010 -> 0100 -> 1000 etc...
-            if let Some(next) = dependends.iter().find(|&item| modules.get(item).map_or(false, |x| !x.is_conjecture())) {
-
+            if let Some(next) = dependends
+                .iter()
+                .find(|&item| modules.get(item).map_or(false, |x| !x.is_conjecture()))
+            {
                 if dependends.len() == 2 {
                     value |= bit; // if len is 2, then we always have a conjecture (addr), and a flipflop.
                 }
                 // move to next input in chain
                 graph.push_back((next, value, bit << 1));
-            }
-            else {
+            } else {
                 // we reached end of cycle
                 counter_cycles.push(value | bit);
             }
@@ -77,14 +81,20 @@ impl AocDay for Day {
     }
 }
 
-fn press_button(modules: &mut HashMap<String, Module>, change_watch: Option<&str>) -> (usize, usize, bool) {
+fn press_button(
+    modules: &mut HashMap<String, Module>,
+    change_watch: Option<&str>,
+) -> (usize, usize, bool) {
     let mut queue = VecDeque::new();
 
     let mut low_counts = 0;
     let mut high_counts = 0;
     let mut has_change = false;
 
-    queue.push_back(Pulse::Low(String::from("button"), String::from("broadcaster")));
+    queue.push_back(Pulse::Low(
+        String::from("button"),
+        String::from("broadcaster"),
+    ));
 
     while let Some(pulse) = queue.pop_front() {
         debug!("{:?}", &pulse);
@@ -93,11 +103,11 @@ fn press_button(modules: &mut HashMap<String, Module>, change_watch: Option<&str
             Pulse::High(_, receviver) => {
                 high_counts += 1;
                 receviver
-            },
+            }
             Pulse::Low(_, recevier) => {
                 low_counts += 1;
                 recevier
-            },
+            }
         };
 
         has_change |= match change_watch {
@@ -114,24 +124,30 @@ fn press_button(modules: &mut HashMap<String, Module>, change_watch: Option<&str
 }
 
 fn align_conjunctions(modules: &mut HashMap<String, Module>) {
-    let all_conjunctions_keys: Vec<_> = modules.iter()
+    let all_conjunctions_keys: Vec<_> = modules
+        .iter()
         .filter_map(|(k, v)| match v.module_type {
             ModuleType::Conjunction(_) => Some(k.clone()),
-            _ => None
+            _ => None,
         })
         .collect();
-    
+
     for key in all_conjunctions_keys.iter() {
         let sources: Vec<_> = modules
             .values()
             .filter_map(|module| match module.destinations.contains(&key) {
                 true => Some(module.name.clone()),
-                _ => None
-            } )
+                _ => None,
+            })
             .collect();
 
         let conj = modules.get_mut(key).unwrap();
-        conj.module_type = ModuleType::Conjunction(sources.into_iter().map(|src| (src, Pulse::Low("".into(), "".into()))).collect());
+        conj.module_type = ModuleType::Conjunction(
+            sources
+                .into_iter()
+                .map(|src| (src, Pulse::Low("".into(), "".into())))
+                .collect(),
+        );
     }
 }
 
@@ -143,9 +159,9 @@ enum Pulse {
 
 #[derive(Debug, Clone)]
 enum ModuleType {
-    Broadcast, 
+    Broadcast,
     FlipFlop(bool),
-    Conjunction(HashMap<String, Pulse>)
+    Conjunction(HashMap<String, Pulse>),
 }
 /*
 broadcaster -> a, b, c
@@ -155,7 +171,7 @@ broadcaster -> a, b, c
 &inv -> a
  */
 
- #[derive(Debug, Clone)]
+#[derive(Debug, Clone)]
 struct Module {
     name: String,
     module_type: ModuleType,
@@ -170,14 +186,22 @@ impl Module {
             b'&' => ModuleType::Conjunction(Default::default()),
             b'%' => ModuleType::FlipFlop(false),
             b'b' => ModuleType::Broadcast,
-            _ => unreachable!()
+            _ => unreachable!(),
         };
 
         let name = p1.trim_matches(&['&', '%', ' ']).into();
 
-        let destinations: Vec<String> = deps.trim().split(',').map(|part| part.trim().into()).collect();
+        let destinations: Vec<String> = deps
+            .trim()
+            .split(',')
+            .map(|part| part.trim().into())
+            .collect();
 
-        Self { name, module_type, destinations }
+        Self {
+            name,
+            module_type,
+            destinations,
+        }
     }
 
     fn is_conjecture(&self) -> bool {
@@ -189,12 +213,16 @@ impl Module {
             ModuleType::Broadcast => {
                 for dep in self.destinations.iter() {
                     match pulse {
-                        Pulse::High(_, _) => queue.push_back(Pulse::High(self.name.clone(), dep.clone())),
-                        Pulse::Low(_, _) => queue.push_back(Pulse::Low(self.name.clone(), dep.clone())),
+                        Pulse::High(_, _) => {
+                            queue.push_back(Pulse::High(self.name.clone(), dep.clone()))
+                        }
+                        Pulse::Low(_, _) => {
+                            queue.push_back(Pulse::Low(self.name.clone(), dep.clone()))
+                        }
                     };
                 }
-            },
-            ModuleType::FlipFlop(ref mut state) => {
+            }
+            ModuleType::FlipFlop(state) => {
                 if matches!(&pulse, Pulse::High(_, _)) {
                     return;
                 }
@@ -207,25 +235,26 @@ impl Module {
                     queue.push_back(pulse);
                 }
 
-                *state = !*state;
+                *state = !*state
             }
-            ModuleType::Conjunction(ref mut state) => {
-
+            ModuleType::Conjunction(state) => {
                 let sender = match &pulse {
                     Pulse::High(sender, _) => sender,
                     Pulse::Low(sender, _) => sender,
                 };
 
                 state.insert(sender.into(), pulse.clone());
-                if state.values().all(|input| matches!(input, Pulse::High(_, _))) {
+                if state
+                    .values()
+                    .all(|input| matches!(input, Pulse::High(_, _)))
+                {
                     for dep in self.destinations.iter() {
                         queue.push_back(Pulse::Low(self.name.clone(), dep.clone()));
-                    }                
-                }
-                else {
+                    }
+                } else {
                     for dep in self.destinations.iter() {
                         queue.push_back(Pulse::High(self.name.clone(), dep.clone()));
-                    }       
+                    }
                 }
             }
         }

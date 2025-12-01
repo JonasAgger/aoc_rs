@@ -20,7 +20,7 @@ format:
     cargo fmt
 
 build: clear
-    cargo build
+    cargo +nightly build
 
 run DAY="": clear
     cargo +nightly run -- run {{DAY}}
