@@ -128,35 +128,6 @@ fn find_next(current: usize, range: &RangeInclusive<usize>) -> Option<usize> {
     }
 }
 
-fn find_next2(current: usize, range: &RangeInclusive<usize>) -> Option<usize> {
-    if !range.contains(&current) {
-        return None;
-    }
-
-    // find 10 exp
-    let current_ilog = current.ilog10();
-
-    for i in current_ilog..0 {}
-
-    let number_count_div2 = (current_ilog / 2) + 1;
-
-    let exponent = 10usize.pow(number_count_div2);
-
-    // construct duplicate of upper / lower half
-    let duplicate = current / exponent;
-    let number = duplicate * exponent + duplicate;
-
-    if number < current {
-        let next = (duplicate + 1) * exponent;
-        return find_next(next, range);
-    }
-
-    match range.contains(&number) {
-        true => Some(number),
-        false => None,
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;

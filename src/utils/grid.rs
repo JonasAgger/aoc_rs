@@ -84,6 +84,17 @@ impl<T: Clone + Display> Grid2D<T> {
         self.backing_vec.len() / self.row_width
     }
 
+    pub fn set<P: Into<Point>>(&mut self, p: P, item: T) {
+        let Point { x, y } = p.into();
+        match self.is_within_bounds((x, y)) {
+            true => {
+                let index = y * self.row_width + x;
+                self.backing_vec[index] = item;
+            }
+            false => panic!("point: {:?} was not inside grid bounds", x),
+        }
+    }
+
     pub fn get<P: Into<Point>>(&self, p: P) -> Option<&T> {
         let Point { x, y } = p.into();
         match self.is_within_bounds((x, y)) {
@@ -155,6 +166,35 @@ impl<T: Clone + Display> Grid2D<T> {
         } else {
             panic!("Tried to swap invalid indicies {} -- {}", src, dest);
         }
+    }
+
+    pub fn point_iter(&self) -> PointIter {
+        PointIter {
+            len: self.backing_vec.len(),
+            width: self.row_width,
+            index: 0,
+        }
+    }
+}
+
+pub struct PointIter {
+    len: usize,
+    width: usize,
+    index: usize,
+}
+
+impl Iterator for PointIter {
+    type Item = Point;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.index >= self.len {
+            return None;
+        }
+
+        let y = self.index / self.width;
+        let x = self.index % self.width;
+        self.index += 1;
+        Some(Point::new(x, y))
     }
 }
 
