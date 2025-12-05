@@ -16,6 +16,18 @@ pub fn split_chunk_empty(input: &[String]) -> Vec<Vec<String>> {
     splits
 }
 
+pub fn split_chunk_empty_once(input: &[String]) -> (&[String], &[String]) {
+    let mut idx = 0;
+    for i in 0..input.len() {
+        if input[i].is_empty() {
+            idx = i;
+            break;
+        }
+    }
+
+    (&input[..idx], &input[(idx + 1)..])
+}
+
 pub trait GrpBy<T> {
     fn group_by<A: Fn(&T, &T) -> bool>(self, cmp: A) -> impl Iterator<Item = Vec<T>>;
 }

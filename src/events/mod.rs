@@ -66,6 +66,7 @@ pub fn get_day(day: u8, year: u16) -> Result<Box<dyn AocDay>> {
 (23, 2024) => Ok(Box::new(year_2024::day_23::Day::new())),
 (7, 2024) => Ok(Box::new(year_2024::day_07::Day::new())),
 (4, 2025) => Ok(Box::new(year_2025::day_04::Day::new())),
+(5, 2025) => Ok(Box::new(year_2025::day_05::Day::new())),
 (1, 2025) => Ok(Box::new(year_2025::day_01::Day::new())),
 (2, 2025) => Ok(Box::new(year_2025::day_02::Day::new())),
 (3, 2025) => Ok(Box::new(year_2025::day_03::Day::new())),

@@ -8,7 +8,7 @@ pub mod vec2d;
 
 use std::{
     fmt::{Debug, Display},
-    str::{pattern::Pattern, FromStr},
+    str::{FromStr, pattern::Pattern},
 };
 
 pub use aoc_result::AoCResult;
