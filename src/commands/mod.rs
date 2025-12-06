@@ -45,7 +45,7 @@ impl InputFetcher {
         ) {
             (Ok(input), _) => {
                 trace!("Found file cahce. Fetching from file");
-                input.lines().map(|s| s.trim().into()).collect()
+                input.lines().map(|s| s.into()).collect()
             }
             (Err(_), false) => {
                 trace!("Did not find file cahce. Fetching from source");
