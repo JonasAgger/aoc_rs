@@ -1,4 +1,4 @@
-use std::fmt::Display;
+use std::{fmt::Display, ops::Add};
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Eq, Ord, Hash)]
 pub struct Vec2D {
@@ -26,6 +26,17 @@ impl Vec2D {
 
     pub fn magnitude(&self) -> usize {
         (self.x.abs() + self.y.abs()) as usize
+    }
+}
+
+impl Add for Vec2D {
+    type Output = Vec2D;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Vec2D {
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
+        }
     }
 }
 

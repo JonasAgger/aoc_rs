@@ -45,6 +45,26 @@ impl<T: Clone + Display> Grid2D<T> {
         }
     }
 
+    pub fn parse_char_it<'a, IT: Iterator<Item = &'a String>, F: Fn(char) -> T>(
+        input: IT,
+        parser: F,
+    ) -> Self {
+        let mut backing_vec = vec![];
+        let mut row_width = 0;
+
+        for line in input {
+            row_width = line.len();
+
+            let parsed: Vec<_> = line.chars().map(&parser).collect();
+            backing_vec.extend_from_slice(parsed.as_slice());
+        }
+
+        Self {
+            backing_vec,
+            row_width,
+        }
+    }
+
     pub fn build<F: Fn(usize, usize) -> T>(row_width: usize, rows: usize, factory: F) -> Self {
         let mut backing_vec = Vec::with_capacity(row_width * rows);
 

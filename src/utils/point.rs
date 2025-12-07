@@ -1,6 +1,6 @@
 use std::{
     fmt::{Debug, Display},
-    ops::Add,
+    ops::{Add, AddAssign},
 };
 
 use super::vec2d::Vec2D;
@@ -111,6 +111,21 @@ impl Point {
         let y = self.y as i64 - y as i64;
         Vec2D::new(x, y)
     }
+
+    pub fn checked_add(&self, rhs: Vec2D) -> Option<Self> {
+        let mut res = *self;
+        res = if rhs.x() < 0 {
+            res.sub_x(rhs.x().abs() as usize)?
+        } else {
+            res.add_x(rhs.x() as usize)?
+        };
+
+        if rhs.y() < 0 {
+            res.sub_y(rhs.y().abs() as usize)
+        } else {
+            res.add_y(rhs.y() as usize)
+        }
+    }
 }
 
 impl Display for Point {
@@ -178,6 +193,12 @@ impl Add<Vec2D> for Point {
         } else {
             self.add_y(rhs.y() as usize).unwrap()
         }
+    }
+}
+
+impl AddAssign<Vec2D> for Point {
+    fn add_assign(&mut self, rhs: Vec2D) {
+        *self = *self + rhs;
     }
 }
 

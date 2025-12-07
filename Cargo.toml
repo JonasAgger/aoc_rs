@@ -10,6 +10,7 @@ anyhow = "1.0.100"
 chrono = "0.4.42"
 clap = { version = "4.5.53", features = ["derive"] }
 cookie = "0.18.1"
+derive_more = { version = "2.1.0", features = ["display"] }
 fancy-regex = "0.16.2"
 html-escape = "0.2.13"
 itertools = "0.14.0"
