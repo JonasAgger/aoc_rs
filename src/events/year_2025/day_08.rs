@@ -21,29 +21,7 @@ impl AocDay for Day {
     fn run_part1(&mut self, input: &[String]) -> Result<AoCResult> {
         let junctions_to_connect = variable(10usize, 1000);
 
-        let mut junctions: Vec<_> = input
-            .into_iter()
-            .enumerate()
-            .map(|(idx, s)| {
-                let mut numbers = s.split(',').map(|s| s.number());
-                Tensor {
-                    x: numbers.next().unwrap(),
-                    y: numbers.next().unwrap(),
-                    z: numbers.next().unwrap(),
-                    circuit_id: idx,
-                }
-            })
-            .collect();
-
-        let mut circuits: Vec<Option<Circuit>> = (0..junctions.len())
-            .into_iter()
-            .map(|x| {
-                Some(Circuit {
-                    id: x,
-                    members: [x].into(),
-                })
-            })
-            .collect();
+        let (mut junctions, mut circuits) = parse(input);
 
         // Find max based on size.
         let connections = find(&junctions, *junctions_to_connect);
@@ -87,29 +65,7 @@ impl AocDay for Day {
     fn run_part2(&mut self, input: &[String]) -> Result<AoCResult> {
         let junction_count = input.len();
 
-        let mut junctions: Vec<_> = input
-            .into_iter()
-            .enumerate()
-            .map(|(idx, s)| {
-                let mut numbers = s.split(',').map(|s| s.number());
-                Tensor {
-                    x: numbers.next().unwrap(),
-                    y: numbers.next().unwrap(),
-                    z: numbers.next().unwrap(),
-                    circuit_id: idx,
-                }
-            })
-            .collect();
-
-        let mut circuits: Vec<Option<Circuit>> = (0..junctions.len())
-            .into_iter()
-            .map(|x| {
-                Some(Circuit {
-                    id: x,
-                    members: [x].into(),
-                })
-            })
-            .collect();
+        let (mut junctions, mut circuits) = parse(input);
 
         // Find max based on size.
         let connections = find(&junctions, junctions.len() * 10); // find many
@@ -148,7 +104,7 @@ impl AocDay for Day {
     }
 }
 
-fn find(input: &[Tensor], count: usize) -> BinaryHeap<ShortestConnection> {
+fn find(input: &[Tensor], max_count: usize) -> BinaryHeap<ShortestConnection> {
     let mut paths = BinaryHeap::new();
 
     for idx in 0..(input.len() - 1) {
@@ -162,7 +118,7 @@ fn find(input: &[Tensor], count: usize) -> BinaryHeap<ShortestConnection> {
                 id2: i,
             };
             paths.push(shortest);
-            if paths.len() > count {
+            if paths.len() > max_count {
                 paths.pop();
             }
         }
@@ -171,6 +127,33 @@ fn find(input: &[Tensor], count: usize) -> BinaryHeap<ShortestConnection> {
     paths
 }
 
+fn parse(input: &[String]) -> (Vec<Tensor>, Vec<Option<Circuit>>) {
+    let junctions: Vec<_> = input
+        .into_iter()
+        .enumerate()
+        .map(|(idx, s)| {
+            let mut numbers = s.split(',').map(|s| s.number());
+            Tensor {
+                x: numbers.next().unwrap(),
+                y: numbers.next().unwrap(),
+                z: numbers.next().unwrap(),
+                circuit_id: idx,
+            }
+        })
+        .collect();
+
+    let circuits: Vec<Option<Circuit>> = (0..junctions.len())
+        .into_iter()
+        .map(|x| {
+            Some(Circuit {
+                id: x,
+                members: [x].into(),
+            })
+        })
+        .collect();
+
+    (junctions, circuits)
+}
 #[derive(Debug, PartialEq, Eq, Ord)]
 struct ShortestConnection {
     distance: usize,
