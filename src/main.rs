@@ -5,6 +5,7 @@
 mod commands;
 mod day_generator;
 pub mod events;
+mod tracking_alloc;
 pub mod utils;
 pub mod vm;
 
@@ -14,10 +15,15 @@ use clap::{Parser, Subcommand, ValueEnum};
 use tracing::{Level, debug};
 use tracing_subscriber::FmtSubscriber;
 
-use crate::{commands::InputFetcher, day_generator::DayGenerator};
+use crate::{
+    commands::InputFetcher, day_generator::DayGenerator, tracking_alloc::TrackingAllocator,
+};
 
 const DAYS_FOLDER: &str = "./src/events";
 const INPUT_FOLDER: &str = "./inputs";
+
+#[global_allocator]
+static ALLOC: TrackingAllocator = TrackingAllocator;
 
 #[derive(Parser, Debug)]
 struct AoCOptions {

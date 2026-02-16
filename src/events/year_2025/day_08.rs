@@ -105,7 +105,7 @@ impl AocDay for Day {
 }
 
 fn find(input: &[Tensor], max_count: usize) -> BinaryHeap<ShortestConnection> {
-    let mut paths = BinaryHeap::new();
+    let mut paths = BinaryHeap::with_capacity(max_count + 1);
 
     for idx in 0..(input.len() - 1) {
         let curr = &input[idx];

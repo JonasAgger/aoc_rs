@@ -1,6 +1,6 @@
 use std::{
     fmt::{Debug, Display},
-    ops::{Add, AddAssign},
+    ops::{Add, AddAssign, Sub},
 };
 
 use super::vec2d::Vec2D;
@@ -18,7 +18,7 @@ pub struct IPoint {
 }
 
 impl IPoint {
-    pub fn new(x: i64, y: i64) -> Self {
+    pub const fn new(x: i64, y: i64) -> Self {
         Self { x, y }
     }
 
@@ -56,6 +56,16 @@ impl IPoint {
 
     pub fn manhattan_distance(&self, other: &IPoint) -> i64 {
         (self.x.abs_diff(other.x) + self.y.abs_diff(other.y)) as i64
+    }
+
+    pub fn euclidian_distance_lossy(&self, other: &IPoint) -> isize {
+        let dist = (self.x - other.x).pow(2) + (self.y - other.y).pow(2);
+        (dist as f64).sqrt() as isize
+    }
+
+    pub fn area(&self, other: &IPoint) -> u64 {
+        // starting points are inclusive
+        (self.x.abs_diff(other.x) + 1) * (self.y.abs_diff(other.y) + 1)
     }
 }
 
@@ -103,6 +113,11 @@ impl Point {
 
     pub fn manhattan_distance(&self, other: &Point) -> usize {
         self.x.abs_diff(other.x) + self.y.abs_diff(other.y)
+    }
+
+    pub fn area(&self, other: &Point) -> usize {
+        // starting points are inclusive
+        (self.x.abs_diff(other.x) + 1) * (self.y.abs_diff(other.y) + 1)
     }
 
     pub fn get_diff<P: Into<Point>>(&self, other: P) -> Vec2D {
@@ -178,6 +193,18 @@ impl From<&(usize, usize)> for Point {
     }
 }
 
+impl From<(i64, i64)> for IPoint {
+    fn from(e: (i64, i64)) -> IPoint {
+        IPoint::new(e.0, e.1)
+    }
+}
+
+impl From<&(i64, i64)> for IPoint {
+    fn from(e: &(i64, i64)) -> IPoint {
+        IPoint::new(e.0, e.1)
+    }
+}
+
 impl Add<Vec2D> for Point {
     type Output = Point;
 
@@ -207,5 +234,21 @@ impl Add<Vec2D> for IPoint {
 
     fn add(self, rhs: Vec2D) -> Self::Output {
         self.add_x(rhs.x()).unwrap().add_y(rhs.y()).unwrap()
+    }
+}
+
+impl Add for IPoint {
+    type Output = IPoint;
+
+    fn add(self, rhs: IPoint) -> Self::Output {
+        self.add_x(rhs.x).and_then(|s| s.add_y(rhs.y)).unwrap()
+    }
+}
+
+impl Sub for IPoint {
+    type Output = IPoint;
+
+    fn sub(self, rhs: IPoint) -> Self::Output {
+        self.sub_x(rhs.x).and_then(|s| s.sub_y(rhs.y)).unwrap()
     }
 }

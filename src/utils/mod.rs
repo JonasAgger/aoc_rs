@@ -1,5 +1,6 @@
 pub mod aoc_result;
 pub mod grid;
+pub mod line;
 pub mod math_utils;
 pub mod point;
 pub mod slice_utils;

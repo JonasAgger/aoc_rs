@@ -1,7 +1,7 @@
 use anyhow::Result;
 use std::time::{Duration, Instant};
 
-use crate::events;
+use crate::{events, tracking_alloc::TrackingAllocator};
 use tracing::{debug, info};
 
 const ITERATION_CUTOFF: u32 = 100;
@@ -24,6 +24,7 @@ fn part1(day: u8, year: u16, input: &Vec<String>) -> Result<()> {
 
     let start = Instant::now();
     let mut iterations = 0;
+    let alloced_before = TrackingAllocator::alloced();
     let part1 = loop {
         let part1 = std::hint::black_box(aoc_day.run_part1(input)?);
         iterations += 1;
@@ -32,7 +33,17 @@ fn part1(day: u8, year: u16, input: &Vec<String>) -> Result<()> {
         }
     };
 
-    info!("--Part1: Took {:?}", start.elapsed() / iterations);
+    let alloced_after = TrackingAllocator::alloced();
+
+    info!(
+        "--Part1: Took {:?} - Iterations: {}",
+        start.elapsed() / iterations,
+        iterations
+    );
+    info!(
+        "--Part1: Memory {} bytes/iteration",
+        (alloced_after - alloced_before) / iterations as usize
+    );
 
     debug!("--Part1: '{}'", part1);
     Ok(())
@@ -43,6 +54,8 @@ fn part2(day: u8, year: u16, input: &Vec<String>) -> Result<()> {
 
     let start = Instant::now();
     let mut iterations = 0;
+    let alloced_before = TrackingAllocator::alloced();
+
     let part2 = loop {
         let part2 = std::hint::black_box(aoc_day.run_part2(input)?);
         iterations += 1;
@@ -50,7 +63,18 @@ fn part2(day: u8, year: u16, input: &Vec<String>) -> Result<()> {
             break part2;
         }
     };
-    info!("--Part2: Took {:?}", start.elapsed() / iterations);
+
+    let alloced_after = TrackingAllocator::alloced();
+
+    info!(
+        "--Part2: Took {:?} - Iterations: {}",
+        start.elapsed() / iterations,
+        iterations
+    );
+    info!(
+        "--Part2: Memory {} bytes/iteration",
+        (alloced_after - alloced_before) / iterations as usize
+    );
 
     debug!("--Part2: '{}'", part2);
     Ok(())
